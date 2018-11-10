@@ -1,0 +1,43 @@
+<div class="container h-100">
+  <div class="row">
+    <div class="col-1"></div>
+    <!-- Technology Information -->
+    <div class="col-9 text-success text-center" *ngIf="addTechInfo">
+      <div>
+        <i class="fa fa-check-circle fa-3x fa-clr-success"></i>
+      </div>
+      <h3>{{addTechInfo.blog}} Technology Info Successfully submitted</h3>
+      <div class="text-info text-center">
+        <ul class="list-inline">
+          <li>
+            <legend>Sub-Technologies</legend>
+          </li>
+          <ul>
+            <li class="list-inline" *ngFor="let sub of addTechInfo.subTechs">{{sub.subTech}}</li>
+          </ul>
+        </ul>
+      </div>
+      <button class="btn btn-info" routerLink="/home">Home</button>
+    </div>
+    <!-- Blog Information -->
+    <div class="col-9 text-success text-center" *ngIf="addBlog">
+      <div>
+        <i class="fa fa-check-circle fa-3x fa-clr-success"></i>
+      </div>
+      <h3>{{addBlog.blog}} Blog Info Successfully submitted</h3>
+      <div class="text-info text-center">
+        <ul class="list-inline">
+          <li>
+            <legend>Sub-Technologies</legend>
+          </li>
+          <ul>
+            <li class="list-inline" >{{addBlog.blog}}</li>
+          </ul>
+        </ul>
+      </div>
+      <button class="btn btn-info" routerLink="/home">Home</button>
+    </div>
+
+    <div class="col-2"></div>
+  </div>
+</div>

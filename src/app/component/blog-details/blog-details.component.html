@@ -1,0 +1,135 @@
+<div class="container">
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-9">
+      <h2 [style.color]="'red'">Spring</h2>
+      <div class="row">
+        <!-- Nav tabs -->
+        <ul class="nav nav-pills" role="tablist">
+          <li class="nav-item" *ngIf="blog.definitions">
+            <a class="nav-link active" data-toggle="pill" href="#Definition">Definition</a>
+          </li>
+          <li class="nav-item" *ngIf="blog.needs">
+            <a class="nav-link" data-toggle="pill" href="#Need">Need</a>
+          </li>
+          <li class="nav-item" *ngIf="blog.archetectures">
+            <a class="nav-link" data-toggle="pill" href="#Archetecture">Archetecture</a>
+          </li>
+          <li class="nav-item" *ngIf="blog.scenarios">
+            <a class="nav-link" data-toggle="pill" href="#Scenarios">Scenarios</a>
+          </li>
+          <li class="nav-item" *ngIf="blog.importances">
+            <a class="nav-link" data-toggle="pill" href="#Importance">Importance</a>
+          </li>
+          <li class="nav-item" *ngIf="blog.limitations">
+            <a class="nav-link" data-toggle="pill" href="#Limitation">Limitation</a>
+          </li>
+          <li class="nav-item" *ngIf="blog.examples">
+            <a class="nav-link" data-toggle="pill" href="#Examples">Examples</a>
+          </li>
+          <li class="nav-item" *ngIf="blog.references">
+            <a class="nav-link" data-toggle="pill" href="#References">References</a>
+          </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div class="tab-pane container active" id="Definition">
+            <h3 class="my-3 bg-white rounded">What is {{blog.subTech}}</h3>
+            <div class="text-justify" *ngFor="let definition of blog.definitions as array; let i = index">
+              <h5 *ngIf="definition.definition">Definition
+                <span *ngIf="array.length > 1">- {{i+1}}</span>
+              </h5>
+              <p [innerHTML]="definition.definition"></p>
+              <div highlight="all" class="border border-primary shadow my-3">
+                <pre><code [textContent]="code" class="p-3"></code></pre>
+              </div>
+              <h5 *ngIf="definition.explanation">Explanation
+                <span *ngIf="array.length > 1">- {{i+1}}</span>
+              </h5>
+              <p [innerHTML]="definition.explanation"></p>
+            </div>
+          </div>
+          <div class="tab-pane container fade" id="Need">
+            <h3 class="my-3 bg-white rounded">What is the Need of {{blog.subTech}}</h3>
+            <div class="text-justify" *ngFor="let need of blog.needs as array; let i = index">
+              <p>
+                <span *ngIf="array.length > 1">{{i+1}}.</span>
+                <span [innerHTML]="need.need"></span>
+              </p>
+            </div>
+          </div>
+          <div class="tab-pane container fade" id="Archetecture">
+            <h3 class="my-3 bg-white rounded">Archetecture of {{blog.subTech}}</h3>
+            <div class="text-justify" *ngFor="let archetecture of blog.archetectures as array; let i = index">
+              <h5 *ngIf="archetecture.diagram">Diagram
+                <span *ngIf="array.length > 1">- {{i+1}}</span>
+              </h5>
+              <p>{{archetecture.diagram}}></p>
+              <h5 *ngIf="archetecture.explanation">Explanation
+                <span *ngIf="array.length > 1">- {{i+1}}</span>
+              </h5>
+              <p [innerHTML]="archetecture.explanation"></p>
+            </div>
+          </div>
+          <div class="tab-pane container fade" id="Scenarios">
+            <h3 class="my-3 bg-white rounded">Scenarios of {{blog.subTech}}</h3>
+            <div class="text-justify" *ngFor="let scenario of blog.scenarios as array; let i = index">
+              <h5 *ngIf="scenario.scenario">Scenario
+                <span *ngIf="array.length > 1">- {{i+1}}</span>
+              </h5>
+              <p [innerHTML]="scenario.scenario"></p>
+              <h5 *ngIf="scenario.archetecture">Archetecture
+                <span *ngIf="array.length > 1">- {{i+1}}</span>
+              </h5>
+              <p>{{scenario.archetecture}}></p>
+              <h5 *ngIf="scenario.explanation">Explanation
+                <span *ngIf="array.length > 1">- {{i+1}}</span>
+              </h5>
+              <p [innerHTML]="scenario.explanation"></p>
+            </div>
+          </div>
+          <div class="tab-pane container fade" id="Importance">
+            <h3 class="my-3 bg-white rounded">Importance of {{blog.subTech}}</h3>
+            <div class="text-justify" *ngFor="let importance of blog.importances as array; let i = index">
+              <p>
+                <span *ngIf="array.length > 1">{{i+1}}.</span>
+                <span [innerHTML]="importance.importance"></span>
+              </p>
+            </div>
+          </div>
+          <div class="tab-pane container fade" id="Limitation">
+            <h3 class="my-3 bg-white rounded">Limitations of {{blog.subTech}}</h3>
+            <div class="text-justify" *ngFor="let limitation of blog.limitations as array; let i = index">
+              <p>
+                <span *ngIf="array.length > 1">{{i+1}}.</span>
+                <span [innerHTML]="limitation.limitation"></span>
+              </p>
+            </div>
+          </div>
+          <div class="tab-pane container fade" id="Examples">
+            <h3 class="my-3 bg-white rounded">Examples of {{blog.subTech}}</h3>
+            <div class="text-justify" *ngFor="let example of blog.examples as array; let i = index">
+              <h5 *ngIf="example.example">Example
+                <span *ngIf="array.length > 1">- {{i+1}}</span>
+              </h5>
+              <p>{{example.example}}</p>
+              <h5 *ngIf="example.explanation">Explanation
+                <span *ngIf="array.length > 1">- {{i+1}}</span>
+              </h5>
+              <p [innerHTML]="example.explanation"></p>
+            </div>
+          </div>
+          <div class="tab-pane container fade" id="References">
+            <h3 class="my-3 bg-white rounded">References of {{blog.subTech}}</h3>
+            <div class="text-justify" *ngFor="let reference of blog.references as array; let i = index">
+              <p>
+                <span *ngIf="array.length > 1">{{i+1}}.</span> {{reference.reference}}</p>
+            </div>
+          </div>
+        </div>
+        <!-- row close-->
+      </div>
+      <div class="col-2"></div>
+    </div>
+  </div>

@@ -1,0 +1,37 @@
+<div class="container">
+  <div class="row">
+    <div class="col-1"></div>
+
+
+    <!-- Shadow box-->
+    <div class="col-9">
+        <!-- Alert messge -->
+        <div class="alert alert-danger alert-dismissible fade show text-center" *ngIf="errorMessage">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          {{errorMessage}}
+        </div>
+      <div class="row">
+        <h1 class="mx-auto text-success font-weight-bold text-capitalize pb-4">Knowledge Sharing</h1>
+      </div>
+      <div class="row">
+        <div class="input-group mb-4">
+          <input type="text" class="form-control" placeholder="Search">
+          <div class="input-group-append">
+            <button class="btn btn-success" type="submit">Search</button>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div *ngFor="let info of techInfo" class="col-xs-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 m-1 make-it-slow rounded" (click)="getTechnologyInfo(info.id)" >
+          <img [src]="info.blogIconName" class="mx-auto d-block pt-1 mt-2" alt="Not found" >
+          <div class="text-center font-weight-bold my-2 p-1" >
+            {{info.blog}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="col-2"></div>
+  </div>
+</div>

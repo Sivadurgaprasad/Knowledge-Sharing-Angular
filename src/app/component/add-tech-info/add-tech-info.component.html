@@ -1,0 +1,112 @@
+<div class="container">
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-9">
+      <h2>Add Technology Info</h2>
+      <form [formGroup]="techForm" (ngSubmit)="submitTechnologyForm(techForm.value)">
+        <div class="form-group">
+          <label for="blog">Blog Name</label>
+          <input type="text" class="form-control" [(ngModel)]="blogName" placeholder="Enter Blog Name" id="blog" formControlName="blog">
+          <div *ngIf="techForm.controls['blog'].errors">
+            <div *ngIf="techForm.controls['blog'].touched && techForm.controls['blog'].invalid">
+              <p class="text-danger">
+                <b>Blog name required</b>
+              </p>
+            </div>
+          </div>
+        </div>  
+
+        <div class="form-group">
+          <label for="shortNote">Short Note on {{blogName}}</label>
+          <textarea rows="4" class="form-control" formControlName="shortNote" placeholder="Short Note on {{blogName}} "></textarea>
+          <div *ngIf="techForm.controls['shortNote'].errors">
+            <div *ngIf="techForm.controls['shortNote'].touched && techForm.controls['shortNote'].invalid">
+              <p class="text-danger">
+                <b>Write Short Note on {{blogName}}</b>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="blogIcon">Select blogIcon</label>
+          <div class="row">
+            <div class="col-8">
+              <img class="card-img w-25 cursor" (click)="blogIconFile.click()" [src]="cardUrl" alt="Add Image">
+              <input type="file" id="blogIcon" #blogIconFile formControlName="blogIcon" (change)="onFileChange($event)">
+            </div>
+            <div class="col-4"></div>
+          </div>
+          <div *ngIf="techForm.controls['blogIcon'].errors">
+            <div *ngIf="techForm.controls['blogIcon'].touched && techForm.controls['blogIcon'].invalid">
+              <p class="text-danger">Icon Required for Blog</p>
+            </div>
+          </div>
+          <div class="progress mt-3" style="height: 15px" *ngIf="showProgress">
+            <div class="progress-bar progress-bar-success" [ngStyle]="{'width': progress+'%', 'height': '15px'}">{{progress}}%</div>
+          </div>
+        </div>
+
+
+
+
+        <div class="form-group">
+          <label for="subTech">Sub Technology </label>
+          <fieldset formArrayName="subTechs" class="form-group" *ngFor="let subTech of techForm.get('subTechs').controls; let id = index">
+            <div [formGroupName]="id">
+              <div class="input-group">
+                <input type="text" class="form-control py-2 border-right-0 border" formControlName="subTech" placeholder="{{id+1}}) Sub Technology">
+                <span class="input-group-append">
+                  <div class=" border-left-0 border">
+                    <button class="btn btn-outline-danger btnfocus" type="button" (click)="removeField('subTechs', id)">
+                      <i class="fa fa-window-close"></i>
+                    </button>
+                  </div>
+                </span>
+              </div>
+            </div>
+          </fieldset>
+          <button type="button" class="btn btn-outline-info" (click)="addSingle('subTechs', 'subTech')">Sub Technology</button>
+        </div>
+        <div>
+          <button type="submit" [disabled]="!techForm.valid" data-toggle="modal" data-target="#result" class="btn btn-outline-info">submit</button>
+        </div>
+      </form>
+    </div>
+    <div class="col-2"></div>
+  </div>
+
+  <!-- Showing success message -->
+  <div class="modal fade" id="result">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div *ngIf="responseData">
+            <div class="small-4 medium-4 large-4 columns text-center">
+              <i class="fa fa-check-circle fa-3x fa-clr-success"></i>
+            </div>
+            <h3 class="text-success text-center">{{blogName}} Technology Info Successfully submitted</h3>
+            <div class="text-info text-center">
+              <ul class="list-inline">
+                <li>
+                  <legend>Sub-Technologies</legend>
+                </li>
+                <ul>
+                  <li class="list-inline-item" *ngFor="let subTech of responseData.subTechs">{{subTech.subTech}}</li>
+                </ul>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success mx-auto" data-dismiss="modal" routerLink="/home">Home</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

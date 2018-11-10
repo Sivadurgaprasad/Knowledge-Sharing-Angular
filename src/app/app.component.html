@@ -1,0 +1,10 @@
+<java-header></java-header>
+<!-- <java-body></java-body> -->
+<div class="h-100 d-flex justify-content-center align-items-center">
+    <div class="my-auto" *ngIf="loading">
+        <i class="fa fa-spinner fa-3x fa-spin fa-pulse fa-clr-info"></i>
+        <div class="text-primary pt-2 font-weight-bold">Loading...</div>
+    </div>
+</div>
+<router-outlet></router-outlet>
+<java-footer></java-footer>

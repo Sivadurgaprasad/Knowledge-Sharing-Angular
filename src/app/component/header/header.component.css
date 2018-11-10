@@ -1,0 +1,28 @@
+.navbar-nav li:hover>.dropdown-menu {
+    display: block;
+    color: rgb(70, 204, 228);
+  }
+
+.dropdown-menu > a:hover, .dropdown-menu > a:focus {
+    background-color:rgb(70, 204, 228);
+}
+
+.dropdown > a , .dropdown-menu > a , .nav-item > a {
+    font-size: 20px;
+}
+
+
+/* .dropdown {list-style: none; background: green; padding: 10px; display: inline-block;} */
+/* .dropdown .nav-link {color: #b91773; text-decoration: none;}
+.dropdown .dropdown-menu a{color: rgb(180, 13, 13); text-decoration: none;}
+.dropdown .btn {background: green; color:rgb(167, 22, 22);}
+.dropdown .btn:hover {background: rgb(32, 4, 83); color:#000;}
+.dropdown .btn:active {background: rgb(255, 38, 0); color:#000;}
+.dropdown .btn:focus {background: rgb(181, 207, 30); color:#000;}
+.dropdown-menu .dropdown-item {display: inline-block; width: 100%; padding: 10px 5px;}
+.container .dropdown .dropdown-menu a:hover
+{
+color:orange;
+background-color: #b91773;
+border-color: rgb(43, 236, 75);
+} */

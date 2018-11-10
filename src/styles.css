@@ -1,0 +1,44 @@
+/* You can add global styles to this file, and also import other style files */
+
+body {
+    padding-top: 80px;
+    padding-bottom: 120px;
+    /* background-image: url("/dist/technology/bg.png");
+    padding-top: 100px;    
+    background-size: cover;     */
+}
+
+.btnfocus {
+    border:none !important;
+    outline: none !important;
+}
+
+input[type="file"]  {
+    display: none;
+}
+
+.cursor {
+    cursor: pointer;
+}
+ 
+.fa-clr-success {
+    color: rgb(11, 146, 11);
+}
+
+.fa-clr-info {
+    color: rgb(27, 125, 206)
+}
+
+.fa-clr-danger {
+    color: rgb(201, 25, 25)
+}
+
+/* html, body { height: 100%; }
+body { margin: 0; font-family: 'Roboto', sans-serif; } */
+
+   @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+   /* @import  './node_modules/font-awesome/css/font-awesome.css'; */
+   @import '~ngx-toastr/toastr.css';
+   @import '~ngx-toastr/toastr-bs4-alert';
+   
+   

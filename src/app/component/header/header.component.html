@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-md bg-info navbar-dark fixed-top">
+  <a class="navbar-brand font-weight-bold" href="#">
+    <h3>Knowledge Sharing</h3>
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <ul class="navbar-nav mr-auto">
+
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="BlogMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Blog
+        </a>
+        <div class="dropdown-menu" aria-labelledby="BlogMenuLink">
+          <a class="dropdown-item" href="{{addBlog}}">Add Blog</a>
+          <a class="dropdown-item" href="#">Update Blog</a>
+          <a class="dropdown-item" href="#">Delete Blog</a>
+        </div>
+      </li>
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="TechnologyMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Technology
+        </a>
+        <div class="dropdown-menu" aria-labelledby="TechnologyMenuLink">
+          <a class="dropdown-item" href="{{addTechInfo}}">Add Technology</a>
+          <a class="dropdown-item" href="#">Update Technology</a>
+          <a class="dropdown-item" href="#">Delete Technology</a>
+        </div>
+      </li>
+
+
+      <li class="nav-item">
+        <a class="nav-link" href="#">Interview Questions</a>
+      </li>
+    </ul>
+  </div>
+</nav>
