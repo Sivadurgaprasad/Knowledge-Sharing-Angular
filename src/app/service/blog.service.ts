@@ -65,7 +65,7 @@ export class BlogService {
   //   }
 
   /** K.S Blog saving service call  */
-  saveBlogService(blog): Observable<string> {
+  saveBlogService(blog:IBlog): Observable<string> {
     return this.http.post(Url.ServerBaseUrl + Url.BlogSave, blog, {responseType: "text"}).catch(this.handleError);
   }
 
@@ -89,6 +89,7 @@ export class BlogService {
   getSingleTechInfoService(id: string): Observable<TechInfoResponse> {
     return this.http.get<TechInfoResponse>(Url.ServerBaseUrl + Url.GetSingleTechInfo + id).catch(this.handleError);
   }
+
 
   /** K.S Error handling for Blog */
   handleError(error: HttpErrorResponse) {

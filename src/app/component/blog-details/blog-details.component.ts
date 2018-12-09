@@ -74,8 +74,8 @@ export class BlogDetailsComponent implements OnInit {
     this.technology = this.activeRoute.snapshot.paramMap.get("technology");
     this.blogservice.getBlogService(this.technology).subscribe(blogResponse => {
       console.log(blogResponse);
-      blogResponse.definitions[0].definition = this.utilService.highlight(blogResponse.definitions[0].definition, blogResponse.subTech);
-      blogResponse.definitions[0].explanation = this.utilService.highlight(blogResponse.definitions[0].explanation, blogResponse.subTech);
+      // blogResponse.definitions[0].definition = this.utilService.highlight(blogResponse.definitions[0].definition, blogResponse.subTech);
+      // blogResponse.definitions[0].explanation = this.utilService.highlight(blogResponse.definitions[0].explanation, blogResponse.subTech);
       this.blog = blogResponse;
     });
   }

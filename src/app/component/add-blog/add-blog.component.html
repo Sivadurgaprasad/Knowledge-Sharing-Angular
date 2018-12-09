@@ -6,249 +6,269 @@
         {{errorMessage}}
       </div> -->
       <h2 class="text-primary">Add {{blogName}} Blog</h2>
-      <form [formGroup]="blogForm" (ngSubmit)="submitBlogForm(blogForm.value)">
-
-        <div class="form-group" ngbDropdown>
-          <label for="tech">Technology</label>
-          <select class="form-control" id="tech" formControlName="tech" (mouseover)="getTechnologies()" (change)="getSubTechnologies($event)">
+      <form [formGroup]="blogForm" (ngSubmit)="submitBlogForm(blogForm)">
+        <!-- id control -->
+        <div class="form-group">
+          <input type="hidden" formControlName="id">
+        </div>
+        <!-- Technology Control -->
+        <div class="form-group">
+          <label for="technology">Technology</label>
+          <select class="form-control" id="technology" formControlName="technology" (mouseover)="getTechnologies()"
+            (change)="getSubTechnologies($event)">
             <option [selected]=true value=""> -- select an option -- </option>
-            <option *ngFor="let dropTech of dropDownTechnology" [value]="dropTech.id">{{dropTech.blog}}</option>
-
+            <option *ngFor="let dropTech of dropDownTechnology" [value]="dropTech.id">{{dropTech.technology}}</option>
           </select>
-          <div *ngIf="blogForm.controls['tech'].errors">
-            <div *ngIf="blogForm.controls['tech'].touched && blogForm.controls['tech'].invalid">
+          <div *ngIf="blogForm.controls['technology'].errors">
+            <div *ngIf="blogForm.controls['technology'].touched && blogForm.controls['technology'].invalid">
               <p class="text-danger">Technology required</p>
             </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="subTech">Sub-Technology</label>
-          <select class="form-control" id="subTech" formControlName="subTech">
-            <option [selected]=true value=""> -- select an option -- </option>
-            <option *ngFor="let sub of dropDownsubTechnologies">{{sub.subTech}}</option>
-          </select>
-          <div *ngIf="blogForm.controls['subTech'].errors">
-            <div *ngIf="blogForm.controls['subTech'].touched && blogForm.controls['subTech'].invalid">
-              <p class="text-danger">Sub-Technology required</p>
+        <!-- Parent Sub Technology Control -->
+        <div class="form-group" formGroupName="subTechs">
+          <!-- Child Sub Technology Control -->
+          <div class="form-group">
+            <label for="subTech">Sub-Technology</label>
+            <select class="form-control" id="subTech" formControlName="subTech">
+              <option [selected]=true value=""> -- select an option -- </option>
+              <option *ngFor="let sub of dropDownsubTechnologies" [value]="sub">{{sub}}</option>
+            </select>
+            <div *ngIf="blogForm.controls['subTech'].errors">
+              <div *ngIf="blogForm.controls['subTech'].touched && blogForm.controls['subTech'].invalid">
+                <p class="text-danger">Sub-Technology required</p>
+              </div>
+            </div>
+          </div>
+          <!-- Blog Control -->
+          <div class="form-group">
+            <label for="blog">Blog Name</label>
+            <input type="text" class="form-control" [(ngModel)]="blogName" placeholder="Enter Blog Name" id="blog"
+              formControlName="blog">
+            <div *ngIf="blogForm.controls['blog'].errors">
+              <div *ngIf="blogForm.controls['blog'].touched && blogForm.controls['blog'].invalid">
+                <p class="text-danger">Blog name required</p>
+              </div>
+            </div>
+          </div>
+          <!-- Definitions Control -->
+          <div class="form-group">
+            <label for="definition">What is {{blogName}}?</label>
+            <fieldset formArrayName="definitions" class="form-group" *ngFor="let def of blogForm.get('definitions').controls; let id = index">
+              <div [formGroupName]="id">
+                <div class="d-flex">
+                  <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('definitions', id)">
+                    {{id+1}} Definition&nbsp;
+                    <i class="fa fa-window-close"></i>
+                  </button>
+                </div>
+                <textarea rows="4" class="form-control" formControlName="definition" placeholder="{{id+1}}) {{blogName}} Definition"></textarea>
+                <textarea rows="4" class="form-control mt-3" formControlName="explanation" placeholder="{{id+1}}) {{blogName}} Explanation"></textarea>
+              </div>
+            </fieldset>
+            <button type="button" class="btn btn-outline-info" (click)="addDouble('definitions', 'definition', 'explanation')">Add
+              Definition</button>
+          </div>
+          <!-- Need Control -->
+          <div class="form-group">
+            <label for="need">Why we need {{blogName}}?</label>
+            <fieldset formArrayName="needs" class="form-group" *ngFor="let need of blogForm.get('needs').controls; let id = index">
+              <div [formGroupName]="id">
+                <div class="d-flex">
+                  <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('needs', id)">
+                    {{id+1}} Need&nbsp;
+                    <i class="fa fa-window-close"></i>
+                  </button>
+                </div>
+                <textarea rows="4" class="form-control" formControlName="need" placeholder="{{id+1}}) {{blogName}} Definition"></textarea>
+              </div>
+            </fieldset>
+            <button type="button" class="btn btn-outline-info" (click)="addSingle('needs', 'need')">Add Need</button>
+          </div>
+          <!-- Scenario Control -->
+          <div class="form-group">
+            <label for="scenario">In which scenarios we can use {{blogName}}?</label>
+            <fieldset formArrayName="scenarios" class="form-group" *ngFor="let scenario of blogForm.get('scenarios').controls; let id = index">
+              <div [formGroupName]="id">
+                <div class="d-flex">
+                  <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('scenarios', id)">
+                    {{id+1}} Scenario&nbsp;
+                    <i class="fa fa-window-close"></i>
+                  </button>
+                </div>
+                <input type="text" class="form-control" formControlName="scenario" placeholder="{{id+1}}) {{blogName}} Scenarios">
+                <textarea rows="4" class="form-control mt-3" formControlName="explanation" placeholder="{{id+1}}) {{blogName}} Explanation"></textarea>
+
+                <label for="scenario-file-upload" class="mt-3">{{id+1}}) {{blogName}} Archetecture</label>
+                <div class="row">
+                  <div class="col-10">
+                    <img class="card-img w-25 cursor" (click)="scenarioFile.click()" [src]="scenarioUrl[id]" alt="Add Image">
+                    <input type="file" id="scenario-file-upload" #scenarioFile formControlName='archetecture' (change)="onFileChange($event , id, 'scenarios')">
+                  </div>
+                  <div class="col-2"></div>
+                </div>
+                <div class="progress mt-3" style="height: 15px" *ngIf="scenarioUrl[id] != initialImageName && scenarioUrl[id] != undefined">
+                  <div class="progress-bar progress-bar-success" [ngStyle]="{'width': progress+'%', 'height': '15px'}">{{progress}}%</div>
+                </div>
+
+              </div>
+            </fieldset>
+            <button type="button" class="btn btn-outline-info" (click)="addTrible('scenarios', 'scenario', 'explanation', 'archetecture')">Add
+              Scenario</button>
+          </div>
+          <!-- Archetecture Control -->
+          <div class="form-group">
+            <label for="archetecture">Archetecture for {{blogName}}?</label>
+            <fieldset formArrayName="archetectures" class="form-group" *ngFor="let archetecture of blogForm.get('archetectures').controls; let id = index">
+              <div [formGroupName]="id">
+                <div class="d-flex">
+                  <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('archetectures', id)">
+                    {{id+1}} Archetecture&nbsp;
+                    <i class="fa fa-window-close"></i>
+                  </button>
+                </div>
+                <input type="text" class="form-control" formControlName="archetecture" placeholder="{{id+1}}) {{blogName}} Archetecture">
+
+                <label for="arc-file-upload" class="mt-3">{{id+1}}) {{blogName}} Diagram</label>
+                <div class="row">
+                  <div class="col-10">
+                    <img class="card-img w-25 cursor" (click)="inputFile.click()" [src]="archetectureUrl[id]" alt="Add Image">
+                    <input type="file" id="arc-file-upload" #inputFile formControlName='diagram' (change)="onFileChange($event , id, 'archetectures')">
+                  </div>
+                  <div class="col-2"></div>
+                </div>
+
+                <div class="progress mt-3" style="height: 15px" *ngIf="archetectureUrl[id] != initialImageName && archetectureUrl[id] != undefined">
+                  <div class="progress-bar progress-bar-success" [ngStyle]="{'width': progress+'%', 'height': '15px'}">{{progress}}%</div>
+                </div>
+
+
+
+                <textarea rows="4" class="form-control mt-3" formControlName="explanation" placeholder="{{id+1}}) {{blogName}} Explanation"></textarea>
+              </div>
+            </fieldset>
+            <button type="button" class="btn btn-outline-info" (click)="addTrible('archetectures', 'archetecture', 'diagram', 'explanation')">Add
+              Archetecture</button>
+          </div>
+          <!-- Importance Control -->
+          <div class="form-group">
+            <label for="importance">Importance of {{blogName}}?</label>
+            <fieldset formArrayName="importances" class="form-group" *ngFor="let importance of blogForm.get('importances').controls; let id = index">
+              <div [formGroupName]="id">
+                <div class="d-flex">
+                  <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('importances', id)">
+                    {{id+1}} Importance&nbsp;
+                    <i class="fa fa-window-close"></i>
+                  </button>
+                </div>
+                <textarea rows="4" class="form-control" formControlName="importance" placeholder="{{id+1}}) {{blogName}} Importance"></textarea>
+              </div>
+            </fieldset>
+            <button type="button" class="btn btn-outline-info" (click)="addSingle('importances', 'importance')">Add
+              Importance</button>
+          </div>
+          <!-- Limits Control -->
+          <div class="form-group">
+            <label for="limits">Limitations of {{blogName}}?</label>
+            <fieldset formArrayName="limitations" class="form-group" *ngFor="let limitation of blogForm.get('limitations').controls; let id = index">
+              <div [formGroupName]="id">
+                <div class="d-flex">
+                  <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('limitations', id)">
+                    {{id+1}} Limitation&nbsp;
+                    <i class="fa fa-window-close"></i>
+                  </button>
+                </div>
+                <textarea rows="4" class="form-control" formControlName="limitation" placeholder="{{id+1}}) {{blogName}} Limitation"></textarea>
+              </div>
+            </fieldset>
+            <button type="button" class="btn btn-outline-info" (click)="addSingle('limitations', 'limitation')">Add
+              Limitation</button>
+          </div>
+          <!-- Reference Control -->
+          <div class="form-group">
+            <label for="reference">Reference document of {{blogName}}?</label>
+            <fieldset formArrayName="references" class="form-group" *ngFor="let reference of blogForm.get('references').controls; let id = index">
+              <div [formGroupName]="id">
+                <div class="d-flex">
+                  <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('references', id)">
+                    {{id+1}} Reference&nbsp;
+                    <i class="fa fa-window-close"></i>
+                  </button>
+                </div>
+                <input type="text" class="form-control" formControlName="reference" placeholder="{{id+1}}) {{blogName}} Reference">
+              </div>
+            </fieldset>
+            <button type="button" class="btn btn-outline-info" (click)="addSingle('references', 'reference')">Add
+              Reference</button>
+          </div>
+          <!-- Example Control -->
+          <div class="form-group">
+            <label for="example">Example program for {{blogName}}?</label>
+            <fieldset formArrayName="examples" class="form-group" *ngFor="let example of blogForm.get('examples').controls; let id = index">
+              <div [formGroupName]="id">
+                <div class="d-flex">
+                  <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('examples', id)">
+                    {{id+1}} Example&nbsp;
+                    <i class="fa fa-window-close"></i>
+                  </button>
+                </div>
+                <input type="text" class="form-control" formControlName="example" placeholder="{{id+1}}) Brief Explanation about it">
+                <label for="program-file-upload" class="mt-3">{{id+1}}) {{blogName}} Program</label>
+                <div class="row">
+                  <div class="col-10">
+                    <img class="card-img w-25 cursor" (click)="programFile.click()" [src]="programUrl[id]" alt="Add Image">
+                    <input type="file" id="program-file-upload" #programFile formControlName='program' (change)="onFileChange($event , id, 'examples')">
+                  </div>
+                  <div class="col-2"></div>
+                </div>
+                <div class="progress mt-3" style="height: 15px" *ngIf="programUrl[id] != initialImageName && programUrl[id] != undefined">
+                  <div class="progress-bar progress-bar-success" [ngStyle]="{'width': progress+'%', 'height': '15px'}">{{progress}}%</div>
+                </div>
+                <textarea rows="4" class="form-control mt-3" formControlName="explanation" placeholder="{{id+1}}) Explanation of above Program"></textarea>
+              </div>
+            </fieldset>
+            <button type="button" class="btn btn-outline-info" (click)="addTrible('examples', 'example', 'program', 'explanation')">Add
+              Example Program</button>
+          </div>
+          <!-- InOutput Control -->
+          <div class="form-group">
+            <label for="inOutputs">{{blogName}} Program Input and output</label>
+            <fieldset formArrayName="inOutputs" class="form-group" *ngFor="let inOut of blogForm.get('inOutputs').controls; let id = index">
+              <div [formGroupName]="id">
+                <div class="d-flex">
+                  <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('inOutputs', id)">
+                    {{id+1}} I/O&nbsp;
+                    <i class="fa fa-window-close"></i>
+                  </button>
+                </div>
+                <input type="text" class="form-control" formControlName="in" placeholder="{{id+1}}) Inputs of above Program">
+                <label for="output-file-upload" class="mt-3">{{id+1}}) {{blogName}} Program Output</label>
+                <div class="row">
+                  <div class="col-10">
+                    <img class="card-img w-25 cursor" (click)="outputFile.click()" [src]="outputUrl[id]" alt="Add Image">
+                    <input type="file" id="output-file-upload" #outputFile formControlName="out" (change)="onFileChange($event , id, 'inOutputs')">
+                  </div>
+                  <div class="2"></div>
+                </div>
+                <div class="progress mt-3" style="height: 15px" *ngIf="outputUrl[id] != initialImageName && outputUrl[id] != undefined">
+                  <div class="progress-bar progress-bar-success" [ngStyle]="{'width': progress+'%', 'height': '15px'}">{{progress}}%</div>
+                </div>
+
+              </div>
+            </fieldset>
+            <div>
+              <button type="button" class="btn btn-outline-info" (click)="addDouble('inOutputs', 'in', 'out')">Add In
+                and
+                Output</button>
             </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="blog">Blog Name</label>
-          <input type="text" class="form-control" [(ngModel)]="blogName" placeholder="Enter Blog Name" id="blog" formControlName="blog">
-          <div *ngIf="blogForm.controls['blog'].errors">
-            <div *ngIf="blogForm.controls['blog'].touched && blogForm.controls['blog'].invalid">
-              <p class="text-danger">Blog name required</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="definition">What is {{blogName}}?</label>
-          <fieldset formArrayName="definitions" class="form-group" *ngFor="let def of blogForm.get('definitions').controls; let id = index">
-            <div [formGroupName]="id">
-              <div class="d-flex">
-                <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('definitions', id)">
-                  {{id+1}} Definition&nbsp;
-                  <i class="fa fa-window-close"></i>
-                </button>
-              </div>
-              <textarea rows="4" class="form-control" formControlName="definition" placeholder="{{id+1}}) {{blogName}} Definition"></textarea>
-              <textarea rows="4" class="form-control mt-3" formControlName="explanation" placeholder="{{id+1}}) {{blogName}} Explanation"></textarea>
-            </div>
-          </fieldset>
-          <button type="button" class="btn btn-outline-info" (click)="addDouble('definitions', 'definition', 'explanation')">Add Definition</button>
-        </div>
-
-        <div class="form-group">
-          <label for="need">Why we need {{blogName}}?</label>
-          <fieldset formArrayName="needs" class="form-group" *ngFor="let need of blogForm.get('needs').controls; let id = index">
-            <div [formGroupName]="id">
-              <div class="d-flex">
-                <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('needs', id)">
-                  {{id+1}} Need&nbsp;
-                  <i class="fa fa-window-close"></i>
-                </button>
-              </div>
-              <textarea rows="4" class="form-control" formControlName="need" placeholder="{{id+1}}) {{blogName}} Definition"></textarea>
-            </div>
-          </fieldset>
-          <button type="button" class="btn btn-outline-info" (click)="addSingle('needs', 'need')">Add Need</button>
-        </div>
-
-        <div class="form-group">
-          <label for="scenario">In which scenarios we can use {{blogName}}?</label>
-          <fieldset formArrayName="scenarios" class="form-group" *ngFor="let scenario of blogForm.get('scenarios').controls; let id = index">
-            <div [formGroupName]="id">
-              <div class="d-flex">
-                <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('scenarios', id)">
-                  {{id+1}} Scenario&nbsp;
-                  <i class="fa fa-window-close"></i>
-                </button>
-              </div>
-              <input type="text" class="form-control" formControlName="scenario" placeholder="{{id+1}}) {{blogName}} Scenarios">
-              <textarea rows="4" class="form-control mt-3" formControlName="explanation" placeholder="{{id+1}}) {{blogName}} Explanation"></textarea>
-
-              <label for="scenario-file-upload" class="mt-3">{{id+1}}) {{blogName}} Archetecture</label>
-              <div class="row">
-                <div class="col-10">
-                  <img class="card-img w-25 cursor" (click)="scenarioFile.click()" [src]="scenarioUrl[id]" alt="Add Image">
-                  <input type="file" id="scenario-file-upload" #scenarioFile formControlName='archetecture' (change)="onFileChange($event , id, 'scenarios')">
-                </div>
-                <div class="col-2"></div>
-              </div>
-              <div class="progress mt-3" style="height: 15px" *ngIf="scenarioUrl[id] != initialImageName && scenarioUrl[id] != undefined">
-                <div class="progress-bar progress-bar-success" [ngStyle]="{'width': progress+'%', 'height': '15px'}">{{progress}}%</div>
-              </div>
-
-            </div>
-          </fieldset>
-          <button type="button" class="btn btn-outline-info" (click)="addTrible('scenarios', 'scenario', 'explanation', 'archetecture')">Add Scenario</button>
-        </div>
-
-
-        <div class="form-group">
-          <label for="archetecture">Archetecture for {{blogName}}?</label>
-          <fieldset formArrayName="archetectures" class="form-group" *ngFor="let archetecture of blogForm.get('archetectures').controls; let id = index">
-            <div [formGroupName]="id">
-              <div class="d-flex">
-                <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('archetectures', id)">
-                  {{id+1}} Archetecture&nbsp;
-                  <i class="fa fa-window-close"></i>
-                </button>
-              </div>
-              <input type="text" class="form-control" formControlName="archetecture" placeholder="{{id+1}}) {{blogName}} Archetecture">
-
-              <label for="arc-file-upload" class="mt-3">{{id+1}}) {{blogName}} Diagram</label>
-              <div class="row">
-                <div class="col-10">
-                  <img class="card-img w-25 cursor" (click)="inputFile.click()" [src]="archetectureUrl[id]" alt="Add Image">
-                  <input type="file" id="arc-file-upload" #inputFile formControlName='diagram' (change)="onFileChange($event , id, 'archetectures')">
-                </div>
-                <div class="col-2"></div>
-              </div>
-
-              <div class="progress mt-3" style="height: 15px" *ngIf="archetectureUrl[id] != initialImageName && archetectureUrl[id] != undefined">
-                <div class="progress-bar progress-bar-success" [ngStyle]="{'width': progress+'%', 'height': '15px'}">{{progress}}%</div>
-              </div>
-
-
-
-              <textarea rows="4" class="form-control mt-3" formControlName="explanation" placeholder="{{id+1}}) {{blogName}} Explanation"></textarea>
-            </div>
-          </fieldset>
-          <button type="button" class="btn btn-outline-info" (click)="addTrible('archetectures', 'archetecture', 'diagram', 'explanation')">Add Archetecture</button>
-        </div>
-
-        <div class="form-group">
-          <label for="importance">Importance of {{blogName}}?</label>
-          <fieldset formArrayName="importances" class="form-group" *ngFor="let importance of blogForm.get('importances').controls; let id = index">
-            <div [formGroupName]="id">
-              <div class="d-flex">
-                <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('importances', id)">
-                  {{id+1}} Importance&nbsp;
-                  <i class="fa fa-window-close"></i>
-                </button>
-              </div>
-              <textarea rows="4" class="form-control" formControlName="importance" placeholder="{{id+1}}) {{blogName}} Importance"></textarea>
-            </div>
-          </fieldset>
-          <button type="button" class="btn btn-outline-info" (click)="addSingle('importances', 'importance')">Add Importance</button>
-        </div>
-
-        <div class="form-group">
-          <label for="limits">Limitations of {{blogName}}?</label>
-          <fieldset formArrayName="limitations" class="form-group" *ngFor="let limitation of blogForm.get('limitations').controls; let id = index">
-            <div [formGroupName]="id">
-              <div class="d-flex">
-                <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('limitations', id)">
-                  {{id+1}} Limitation&nbsp;
-                  <i class="fa fa-window-close"></i>
-                </button>
-              </div>
-              <textarea rows="4" class="form-control" formControlName="limitation" placeholder="{{id+1}}) {{blogName}} Limitation"></textarea>
-            </div>
-          </fieldset>
-          <button type="button" class="btn btn-outline-info" (click)="addSingle('limitations', 'limitation')">Add Limitation</button>
-        </div>
-
-        <div class="form-group">
-          <label for="reference">Reference document of {{blogName}}?</label>
-          <fieldset formArrayName="references" class="form-group" *ngFor="let reference of blogForm.get('references').controls; let id = index">
-            <div [formGroupName]="id">
-              <div class="d-flex">
-                <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('references', id)">
-                  {{id+1}} Reference&nbsp;
-                  <i class="fa fa-window-close"></i>
-                </button>
-              </div>
-              <input type="text" class="form-control" formControlName="reference" placeholder="{{id+1}}) {{blogName}} Reference">
-            </div>
-          </fieldset>
-          <button type="button" class="btn btn-outline-info" (click)="addSingle('references', 'reference')">Add Reference</button>
-        </div>
-
-        <div class="form-group">
-          <label for="example">Example program for {{blogName}}?</label>
-          <fieldset formArrayName="examples" class="form-group" *ngFor="let example of blogForm.get('examples').controls; let id = index">
-            <div [formGroupName]="id">
-              <div class="d-flex">
-                <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('examples', id)">
-                  {{id+1}} Example&nbsp;
-                  <i class="fa fa-window-close"></i>
-                </button>
-              </div>
-              <input type="text" class="form-control" formControlName="example" placeholder="{{id+1}}) Brief Explanation about it">
-              <label for="program-file-upload" class="mt-3">{{id+1}}) {{blogName}} Program</label>
-              <div class="row">
-                <div class="col-10">
-                  <img class="card-img w-25 cursor" (click)="programFile.click()" [src]="programUrl[id]" alt="Add Image">
-                  <input type="file" id="program-file-upload" #programFile formControlName='program' (change)="onFileChange($event , id, 'examples')">
-                </div>
-                <div class="col-2"></div>
-              </div>
-              <div class="progress mt-3" style="height: 15px" *ngIf="programUrl[id] != initialImageName && programUrl[id] != undefined">
-                <div class="progress-bar progress-bar-success" [ngStyle]="{'width': progress+'%', 'height': '15px'}">{{progress}}%</div>
-              </div>
-              <textarea rows="4" class="form-control mt-3" formControlName="explanation" placeholder="{{id+1}}) Explanation of above Program"></textarea>
-            </div>
-          </fieldset>
-          <button type="button" class="btn btn-outline-info" (click)="addTrible('examples', 'example', 'program', 'explanation')">Add Example Program</button>
-        </div>
-
-        <div class="form-group">
-          <label for="inOutputs">{{blogName}} Program Input and output</label>
-          <fieldset formArrayName="inOutputs" class="form-group" *ngFor="let inOut of blogForm.get('inOutputs').controls; let id = index">
-            <div [formGroupName]="id">
-              <div class="d-flex">
-                <button type="button " class="btn btn-outline-danger btnfocus ml-auto" (click)="removeField('inOutputs', id)">
-                  {{id+1}} I/O&nbsp;
-                  <i class="fa fa-window-close"></i>
-                </button>
-              </div>
-              <input type="text" class="form-control" formControlName="in" placeholder="{{id+1}}) Inputs of above Program">
-              <label for="output-file-upload" class="mt-3">{{id+1}}) {{blogName}} Program Output</label>
-              <div class="row">
-                <div class="col-10">
-                  <img class="card-img w-25 cursor" (click)="outputFile.click()" [src]="outputUrl[id]" alt="Add Image">
-                  <input type="file" id="output-file-upload" #outputFile formControlName="out" (change)="onFileChange($event , id, 'inOutputs')">
-                </div>
-                <div class="2"></div>
-              </div>
-              <div class="progress mt-3" style="height: 15px" *ngIf="outputUrl[id] != initialImageName && outputUrl[id] != undefined">
-                <div class="progress-bar progress-bar-success" [ngStyle]="{'width': progress+'%', 'height': '15px'}">{{progress}}%</div>
-              </div>
-
-            </div>
-          </fieldset>
-          <div>
-            <button type="button" class="btn btn-outline-info" (click)="addDouble('inOutputs', 'in', 'out')">Add In and Output</button>
-          </div>
-        </div>
+        <!-- Submit Control -->
         <div>
-          <button type="submit" [disabled]="!blogForm.valid" data-toggle="modal" data-target="#result" class="btn btn-block btn-primary">Submit {{blogName}} Blog</button>
+          <button type="submit" [disabled]="!blogForm.valid" data-toggle="modal" data-target="#result" class="btn btn-block btn-success">Submit
+            {{blogName}} Blog</button>
         </div>
       </form>
     </div>
@@ -271,11 +291,11 @@
           </div>
           <!-- Failed Message-->
           <div *ngIf="errorMessage">
-              <div class="small-4 medium-4 large-4 columns text-center">
-                <i class="fa fa-times fa-3x fa-clr-danger"></i>
-              </div>
-              <h3 class="text-danger text-center">{{errorMessage}}</h3>
+            <div class="small-4 medium-4 large-4 columns text-center">
+              <i class="fa fa-times fa-3x fa-clr-danger"></i>
             </div>
+            <h3 class="text-danger text-center">{{errorMessage}}</h3>
+          </div>
         </div>
 
         <!-- Modal footer -->

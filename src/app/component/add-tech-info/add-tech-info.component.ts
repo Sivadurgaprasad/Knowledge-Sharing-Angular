@@ -5,14 +5,15 @@ import { BlogService } from '../../service/blog.service';
 import { HttpEventType } from '../../../../node_modules/@angular/common/http';
 import { Ksconstant } from '../../static/ksconstant';
 import { ToastrService } from 'ngx-toastr';
-import { TechInfo } from '../../interface/blog';
+import { TechInfo, BlogDropDown } from '../../interface/blog';
+import { DropDownService } from 'src/app/service/drop-down.service';
 
 @Component({
   selector: 'add-tech-info',
   templateUrl: './add-tech-info.component.html',
   styleUrls: ['./add-tech-info.component.css']
 })
-export class AddTechInfoComponent implements OnInit, OnDestroy {
+export class AddTechInfoComponent implements OnInit {
 
   public techForm: FormGroup;
   public selectedFile: File;
@@ -25,9 +26,13 @@ export class AddTechInfoComponent implements OnInit, OnDestroy {
   public cardUrl: string;
   public imageName: string;
   public preImageName: string;
+  public allBlogs: Array<BlogDropDown>;
+  public isTechExist: boolean = false;
+  public hasError: boolean = false;
+  public match: Array<string>;
 
   constructor(private uploadService: ImageUploadService,
-    private blogService: BlogService,
+    private blogService: BlogService, private dropdownService: DropDownService,
     private ksConstant: Ksconstant,
     private toaster: ToastrService) {
     this.cardUrl = ksConstant.formImageUrl;
@@ -35,11 +40,12 @@ export class AddTechInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.techForm = new FormGroup({
-      blog: new FormControl('', Validators.required),
-      blogIcon: new FormControl('', Validators.required),
+      technology: new FormControl('', Validators.required),
+      techIconName: new FormControl('', Validators.required),
       shortNote: new FormControl('', Validators.required),
       subTechs: new FormArray([this.addSingleField('subTech')])
     });
+    this.getAllTechnologies();
   }
 
   addSingleField(field): FormGroup {
@@ -85,18 +91,22 @@ export class AddTechInfoComponent implements OnInit, OnDestroy {
   }
 
   submitTechnologyForm(form) {
+    // for loop for converting Object form to normal strings
+    const subTechsList = this.techForm.get('subTechs') as FormArray;
+    for (let i = 0; i < subTechsList.length; i++) {
+      this.techForm.value.subTechs[i] = this.techForm.value.subTechs[i].subTech;
+    }
+
     if (this.uploadImagePath != null && this.uploadImagePath.length > 0) {
       form["uploadImagePath"] = this.uploadImagePath;
       this.deleteImageUrlList.push(this.uploadImagePath);
       form["deleteImageUrlList"] = this.deleteImageUrlList;
       this.blogService.saveTechInfoService(form).subscribe(resp => {
-        // this.blogService.setSharedTechInfo(resp);
         this.responseData = resp;
       }, error => {
         this.errorMessage = "Technology submitting has some problem, Please try again after some time..."
       });
     }
-    // this.router.navigateByUrl("/success");
   }
 
   removeField(groupName, index) {
@@ -104,8 +114,42 @@ export class AddTechInfoComponent implements OnInit, OnDestroy {
     this.toaster.error(groupName + " Field removed");
   }
 
-  ngOnDestroy() {
-    // this.blogService.clearSharedTechInfo();
+  getAllTechnologies() {
+    this.dropdownService.getTechnologiesService().subscribe(result => {
+      this.allBlogs = new Array<BlogDropDown>();
+      this.allBlogs = result;
+    });
+  }
+
+  checkTechDuplicate(tech: string) {
+    this.match = (this.allBlogs != null && this.allBlogs.length > 0) ? new Array<string>() : null;
+    let isZeroSize: boolean = true;
+    for (let blogs of this.allBlogs) {
+      if (tech.trim().length > 0 && blogs.technology != null && blogs.technology.toLowerCase().startsWith(tech.toLowerCase().trim())) {
+        if (tech.toLowerCase() === blogs.technology.toLowerCase() && tech.length == blogs.technology.length) {
+          this.isTechExist = true;
+          this.hasError = true;
+          this.match = null;
+          break;
+        } else {
+          if (this.match == null)
+            this.match = new Array<string>();
+          this.match.push(blogs.technology);
+          isZeroSize = false;
+          this.hasError = false;
+          this.isTechExist = false;
+        }
+      } else if (tech.trim().length == 0) {
+        this.isTechExist = false;
+        this.hasError = true;
+        this.match = null;
+      } else {
+        this.hasError = false;
+        if (this.match != null && isZeroSize && this.match.length == 0)
+          this.match = null;
+        this.isTechExist = false;
+      }
+    }
   }
 
 }

@@ -1,5 +1,6 @@
 export interface IBlog {
-    tech: string;
+    id: string;
+    technology: string;
     subTechs: SubTech[];
     
 }
@@ -34,9 +35,12 @@ export interface Scenario {
 
 export interface TechInfo {
     id: string;
-    blog: string;
+    technology: string;
     shortNote: string;
-    subTechs: SubTech[];
+    subTechs: Array<string>;
+    uploadImagePath: string;
+    deleteImageUrlList: Array<string>;
+    techIconName: string;
 }
 
 export interface TechInfoResponse {
@@ -65,8 +69,8 @@ export interface ImageUrl {
 
 export interface BlogDropDown {
     id: string;
-    blog: string;
-    subTechs: Array<SubTech>;
+    technology: string;
+    subTechs: Array<string>;
 }
 
 export interface Script {

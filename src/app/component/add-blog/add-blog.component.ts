@@ -6,7 +6,6 @@ import { Router } from '../../../../node_modules/@angular/router';
 import { ImageUploadService } from '../../service/image-upload.service';
 import { Ksconstant } from '../../static/ksconstant';
 import { HttpEventType, HttpEvent } from '../../../../node_modules/@angular/common/http';
-import { group } from '../../../../node_modules/@angular/animations';
 import { ToastrService } from '../../../../node_modules/ngx-toastr';
 import { DropDownService } from '../../service/drop-down.service';
 import { Error } from '../../interface/error';
@@ -18,6 +17,7 @@ import { Error } from '../../interface/error';
 })
 export class AddBlogComponent implements OnInit {
 
+  public SUBTECHS: string = "subTechs";
   public blogForm: FormGroup;
   public name: string;
   public response: IBlog;
@@ -39,14 +39,14 @@ export class AddBlogComponent implements OnInit {
   public scenarioUploadImagePaths: Array<string> = new Array<string>();
   public programUploadImagePaths: Array<string> = new Array<string>();
   public outputUploadImagePaths: Array<string> = new Array<string>();
-  public successResponse:string;
+  public successResponse: string;
   public progress;
   public imageAsFile: File;
   public allBlogs = [];
   public initialImageName: string;
   public dropDownDefault = { selected: true, value: "" };
   public dropDownTechnology: Array<BlogDropDown> = new Array<BlogDropDown>();
-  public dropDownsubTechnologies: Array<SubTech> = new Array<SubTech>();
+  public dropDownsubTechnologies: Array<string> = new Array<string>();
 
 
   constructor(private blogservice: BlogService,
@@ -64,21 +64,29 @@ export class AddBlogComponent implements OnInit {
 
   ngOnInit() {
     this.blogForm = new FormGroup({
-      tech: new FormControl('', Validators.required),
-      subTech: new FormControl('', Validators.required),
-      blog: new FormControl('', Validators.required),
-      definitions: new FormArray([this.addDoubleFields('definition', 'explanation')]),
-      needs: new FormArray([this.addSingleField('need')]),
-      scenarios: new FormArray([this.addTribleFields('scenario', 'explanation', 'archetecture')]),
-      archetectures: new FormArray([this.addTribleFields('archetecture', 'diagram', 'explanation')]),
-      importances: new FormArray([this.addSingleField('importance')]),
-      limitations: new FormArray([this.addSingleField('limitation')]),
-      references: new FormArray([this.addSingleField('reference')]),
-      examples: new FormArray([this.addTribleFields('example', 'program', 'explanation')]),
-      inOutputs: new FormArray([this.addDoubleFields('in', 'out')])
+      id: new FormControl(''),
+      technology: new FormControl('', Validators.required),
+      subTechs: new FormGroup({
+        subTech: new FormControl('', Validators.required),
+        blog: new FormControl('', Validators.required),
+        definitions: new FormArray([this.addDoubleFields('definition', 'explanation')]),
+        examples: new FormArray([this.addTribleFields('example', 'program', 'explanation')]),
+        importances: new FormArray([this.addSingleField('importance')]),
+        inOutputs: new FormArray([this.addDoubleFields('in', 'out')]),
+        limitations: new FormArray([this.addSingleField('limitation')]),
+        archetectures: new FormArray([this.addTribleFields('archetecture', 'diagram', 'explanation')]),
+        needs: new FormArray([this.addSingleField('need')]),
+        references: new FormArray([this.addSingleField('reference')]),
+        scenarios: new FormArray([this.addTribleFields('scenario', 'explanation', 'archetecture')])
+      })
     });
+    console.log(this.subTechs);
+    console.log(this.subTechs.get("blog"));
   }
 
+  get subTechs() {
+    return this.blogForm.get("subTechs");
+  }
 
   addSingleField(field): FormGroup {
     const arrayFields: FormGroup = new FormGroup({});
@@ -102,7 +110,7 @@ export class AddBlogComponent implements OnInit {
   }
 
   addSingle(groupName, field) {
-    (<FormArray>this.blogForm.get(groupName)).push(this.addSingleField(field));
+    (<FormArray>this.subTechs.get(groupName)).push(this.addSingleField(field));
     this.toaster.info(field + " field added.");
   }
 
@@ -110,7 +118,7 @@ export class AddBlogComponent implements OnInit {
     if (groupName == 'inOutputs') {
       this.outputUrl[this.outputUrl.length] = this.ksConstant.formImageUrl;
     }
-    (<FormArray>this.blogForm.get(groupName)).push(this.addDoubleFields(field1, field2));
+    (<FormArray>this.subTechs.get(groupName)).push(this.addDoubleFields(field1, field2));
     this.toaster.info(field1 + " and " + field2 + " fields added.");
   }
 
@@ -122,7 +130,7 @@ export class AddBlogComponent implements OnInit {
     } else if (groupName == 'examples') {
       this.programUrl[this.programUrl.length] = this.ksConstant.formImageUrl;
     }
-    (<FormArray>this.blogForm.get(groupName)).push(this.addTribleFields(field1, field2, field3));
+    (<FormArray>this.subTechs.get(groupName)).push(this.addTribleFields(field1, field2, field3));
     this.toaster.info(field1 + " , " + field2 + " and " + field3 + " fields added.");
   }
 
@@ -151,7 +159,7 @@ export class AddBlogComponent implements OnInit {
       default:
         this.errorMessage = '';
     }
-    (<FormArray>this.blogForm.get(groupName)).removeAt(index);
+    (<FormArray>this.subTechs.get(groupName)).removeAt(index);
     this.toaster.error(groupName + " removed.")
   }
 
@@ -254,10 +262,12 @@ export class AddBlogComponent implements OnInit {
   }
 
   submitBlogForm(blogForm) {
-    if (this.blogForm.get("tech").value != null && this.blogForm.get("tech").value != undefined && this.blogForm.get("tech").value != "") {
+    console.log(blogForm);
+
+    /* if (this.blogForm.get("technology").value != null && this.blogForm.get("technology").value != undefined && this.blogForm.get("technology").value != "") {
       for (let tech of this.dropDownTechnology) {
-        if (tech.id === this.blogForm.get("tech").value) {
-          blogForm["tech"] = tech.blog;
+        if (tech.id === this.blogForm.get("technology").value) {
+          blogForm["technology"] = tech.technology;
           break;
         }
       }
@@ -290,19 +300,21 @@ export class AddBlogComponent implements OnInit {
       }
       blogForm["outputDeleteImagePaths"] = this.outputDeleteImagePaths;
     }
+    console.log("adding blog to DB");
     this.blogservice.saveBlogService(blogForm).subscribe(response => {
-      console.log("add blog component response");
+      console.log("add blog component response :"+response);
       this.successResponse = response;
     }, (error: Error) => {
       console.log("add blog component error");
       this.errorMessage = error.errorMessage;
       // this.toaster.error(error.errorMessage);
-    });
+    }); */
   }
 
   getTechnologies() {
     if (this.dropDownTechnology == null || this.dropDownTechnology == undefined || this.dropDownTechnology.length == 0) {
       this.dropdownService.getTechnologiesService().subscribe(tech => {
+        console.log(tech);
         this.dropDownTechnology = tech;
       }, (error: Error) => {
         this.toaster.error(error.errorMessage);
@@ -312,6 +324,10 @@ export class AddBlogComponent implements OnInit {
 
   getSubTechnologies(event) {
     let id = event.target.value;
+    this.blogForm.controls['id'].setValue(id);
+    if (id == null || id == "") {
+      this.dropDownsubTechnologies = null;
+    }
     if (id != null && id != undefined && id != '') {
       this.dropdownService.getSubTechnologiesService(id).subscribe(subTech => {
         this.dropDownsubTechnologies = subTech.subTechs;
