@@ -19,6 +19,7 @@ export class AddBlogComponent implements OnInit {
 
   public SUBTECHS: string = "subTechs";
   public blogForm: FormGroup;
+  public subTechsGroup: FormGroup;
   public name: string;
   public response: IBlog;
   public errorMessage: string;
@@ -45,8 +46,8 @@ export class AddBlogComponent implements OnInit {
   public allBlogs = [];
   public initialImageName: string;
   public dropDownDefault = { selected: true, value: "" };
-  public dropDownTechnology: Array<BlogDropDown> = new Array<BlogDropDown>();
-  public dropDownsubTechnologies: Array<string> = new Array<string>();
+  public dropDownTechnology: Array<BlogDropDown>;
+  public dropDownsubTechnologies: Array<string>;
 
 
   constructor(private blogservice: BlogService,
@@ -66,26 +67,26 @@ export class AddBlogComponent implements OnInit {
     this.blogForm = new FormGroup({
       id: new FormControl(''),
       technology: new FormControl('', Validators.required),
-      subTechs: new FormGroup({
-        subTech: new FormControl('', Validators.required),
-        blog: new FormControl('', Validators.required),
-        definitions: new FormArray([this.addDoubleFields('definition', 'explanation')]),
-        examples: new FormArray([this.addTribleFields('example', 'program', 'explanation')]),
-        importances: new FormArray([this.addSingleField('importance')]),
-        inOutputs: new FormArray([this.addDoubleFields('in', 'out')]),
-        limitations: new FormArray([this.addSingleField('limitation')]),
-        archetectures: new FormArray([this.addTribleFields('archetecture', 'diagram', 'explanation')]),
-        needs: new FormArray([this.addSingleField('need')]),
-        references: new FormArray([this.addSingleField('reference')]),
-        scenarios: new FormArray([this.addTribleFields('scenario', 'explanation', 'archetecture')])
-      })
+      subTechs: new FormArray([
+        this.subTechs()
+      ])
     });
-    console.log(this.subTechs);
-    console.log(this.subTechs.get("blog"));
   }
 
-  get subTechs() {
-    return this.blogForm.get("subTechs");
+  subTechs() {
+    return new FormGroup({
+      subTech: new FormControl('', Validators.required),
+      blog: new FormControl('', Validators.required),
+      definitions: new FormArray([this.addDoubleFields('definition', 'explanation')]),
+      examples: new FormArray([this.addTribleFields('example', 'program', 'explanation')]),
+      importances: new FormArray([this.addSingleField('importance')]),
+      inOutputs: new FormArray([this.addDoubleFields('in', 'out')]),
+      limitations: new FormArray([this.addSingleField('limitation')]),
+      archetectures: new FormArray([this.addTribleFields('archetecture', 'diagram', 'explanation')]),
+      needs: new FormArray([this.addSingleField('need')]),
+      references: new FormArray([this.addSingleField('reference')]),
+      scenarios: new FormArray([this.addTribleFields('scenario', 'explanation', 'archetecture')])
+    });
   }
 
   addSingleField(field): FormGroup {
@@ -110,7 +111,7 @@ export class AddBlogComponent implements OnInit {
   }
 
   addSingle(groupName, field) {
-    (<FormArray>this.subTechs.get(groupName)).push(this.addSingleField(field));
+    (<FormArray>(<FormArray>this.blogForm.controls['subTechs']).at(0).get(groupName)).push(this.addSingleField(field));
     this.toaster.info(field + " field added.");
   }
 
@@ -118,7 +119,7 @@ export class AddBlogComponent implements OnInit {
     if (groupName == 'inOutputs') {
       this.outputUrl[this.outputUrl.length] = this.ksConstant.formImageUrl;
     }
-    (<FormArray>this.subTechs.get(groupName)).push(this.addDoubleFields(field1, field2));
+    (<FormArray>(<FormArray>this.blogForm.controls["subTechs"]).at(0).get(groupName)).push(this.addDoubleFields(field1, field2));
     this.toaster.info(field1 + " and " + field2 + " fields added.");
   }
 
@@ -130,7 +131,7 @@ export class AddBlogComponent implements OnInit {
     } else if (groupName == 'examples') {
       this.programUrl[this.programUrl.length] = this.ksConstant.formImageUrl;
     }
-    (<FormArray>this.subTechs.get(groupName)).push(this.addTribleFields(field1, field2, field3));
+    (<FormArray>(<FormArray>this.blogForm.controls['subTechs']).at(0).get(groupName)).push(this.addTribleFields(field1, field2, field3));
     this.toaster.info(field1 + " , " + field2 + " and " + field3 + " fields added.");
   }
 
@@ -159,7 +160,7 @@ export class AddBlogComponent implements OnInit {
       default:
         this.errorMessage = '';
     }
-    (<FormArray>this.subTechs.get(groupName)).removeAt(index);
+    (<FormArray>(<FormArray>this.blogForm.controls['subTechs']).at(0).get(groupName)).removeAt(index);
     this.toaster.error(groupName + " removed.")
   }
 
@@ -263,7 +264,8 @@ export class AddBlogComponent implements OnInit {
 
   submitBlogForm(blogForm) {
     console.log(blogForm);
-
+    let json = JSON.stringify(blogForm);
+    console.log("form "+json);
     /* if (this.blogForm.get("technology").value != null && this.blogForm.get("technology").value != undefined && this.blogForm.get("technology").value != "") {
       for (let tech of this.dropDownTechnology) {
         if (tech.id === this.blogForm.get("technology").value) {
@@ -331,6 +333,7 @@ export class AddBlogComponent implements OnInit {
     if (id != null && id != undefined && id != '') {
       this.dropdownService.getSubTechnologiesService(id).subscribe(subTech => {
         this.dropDownsubTechnologies = subTech.subTechs;
+        console.log(this.dropDownsubTechnologies);
       }, (error: Error) => {
         this.toaster.error(error.errorMessage);
       });
