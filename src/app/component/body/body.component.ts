@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { BlogService } from '../../service/blog.service';
 import { TechInfoResponse } from '../../interface/blog';
 import { Url } from '../../static/url.enum';
-import { ToastrService } from '../../../../node_modules/ngx-toastr';
 import { ErrorMessageConstant } from '../../interface/error';
 
 @Component({
@@ -13,14 +12,15 @@ import { ErrorMessageConstant } from '../../interface/error';
 })
 export class BodyComponent implements OnInit {
 
-  public techInfo: Array<TechInfoResponse> = new Array<TechInfoResponse>();
+  public techInfo: Array<TechInfoResponse> = null;
   errorMessage: string;
 
   ngOnInit(): void {
+    console.log(Math.floor(8));
     this.blogService.getAllTechInfoService().subscribe(response => {
       this.techInfo = response;
       this.techInfo.forEach(info => {
-        info.blogIconName = Url.AssetsTechInfoPath + info.blogIconName;
+        info.techIconName = Url.AssetsTechInfoPath + info.techIconName;
       });
     }, error => {
       this.errorMessage = error;
@@ -29,7 +29,6 @@ export class BodyComponent implements OnInit {
 
   constructor(private router: Router,
     private blogService: BlogService,
-    private toasterService: ToastrService,
     private errorMessageConstant: ErrorMessageConstant) {
 
   }

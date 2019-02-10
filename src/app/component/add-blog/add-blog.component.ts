@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormGroup, Validators, FormControl, FormBuilder } from '@angular/forms';
+import { FormArray, FormGroup, Validators, FormControl, FormBuilder, FormGroupName } from '@angular/forms';
 import { BlogService } from '../../service/blog.service';
-import { IBlog, ImageUrl, BlogDropDown, SubTech } from 'src/app/interface/blog';
+import { IBlog, ImageUrl, BlogDropDown, SubTechnology, SequenceInc } from 'src/app/interface/blog';
 import { Router } from '../../../../node_modules/@angular/router';
 import { ImageUploadService } from '../../service/image-upload.service';
 import { Ksconstant } from '../../static/ksconstant';
@@ -9,6 +9,8 @@ import { HttpEventType, HttpEvent } from '../../../../node_modules/@angular/comm
 import { ToastrService } from '../../../../node_modules/ngx-toastr';
 import { DropDownService } from '../../service/drop-down.service';
 import { Error } from '../../interface/error';
+import { UtilService } from 'src/app/service/util.service';
+import { mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-blog',
@@ -17,7 +19,6 @@ import { Error } from '../../interface/error';
 })
 export class AddBlogComponent implements OnInit {
 
-  public SUBTECHS: string = "subTechs";
   public blogForm: FormGroup;
   public subTechsGroup: FormGroup;
   public name: string;
@@ -46,8 +47,9 @@ export class AddBlogComponent implements OnInit {
   public allBlogs = [];
   public initialImageName: string;
   public dropDownDefault = { selected: true, value: "" };
-  public dropDownTechnology: Array<BlogDropDown>;
+  public dropDownTechnology: Array<string>;
   public dropDownsubTechnologies: Array<string>;
+  public dropDwonObj: BlogDropDown;
 
 
   constructor(private blogservice: BlogService,
@@ -55,7 +57,8 @@ export class AddBlogComponent implements OnInit {
     private imageService: ImageUploadService,
     private ksConstant: Ksconstant,
     private toaster: ToastrService,
-    private dropdownService: DropDownService) {
+    private dropdownService: DropDownService,
+    private utilService: UtilService) {
     this.scenarioUrl.push(ksConstant.formImageUrl);
     this.archetectureUrl.push(ksConstant.formImageUrl);
     this.programUrl.push(ksConstant.formImageUrl);
@@ -67,26 +70,29 @@ export class AddBlogComponent implements OnInit {
     this.blogForm = new FormGroup({
       id: new FormControl(''),
       technology: new FormControl('', Validators.required),
-      subTechs: new FormArray([
-        this.subTechs()
-      ])
+      subTechnologies: new FormGroup({
+        defaultSubTechnologyName: new FormGroup({
+          subTechnology: new FormControl(''),
+          shortNote: new FormControl(''),
+          blogs: new FormGroup({
+            defaultBlogName: new FormGroup({
+              blog: new FormControl(''),
+              definitions: new FormArray([this.addDoubleFields('definition', 'explanation')]),
+              examples: new FormArray([this.addTribleFields('example', 'program', 'explanation')]),
+              importances: new FormArray([this.addSingleField('importance')]),
+              inOutputs: new FormArray([this.addDoubleFields('in', 'out')]),
+              limitations: new FormArray([this.addSingleField('limitation')]),
+              archetectures: new FormArray([this.addTribleFields('archetecture', 'diagram', 'explanation')]),
+              needs: new FormArray([this.addSingleField('need')]),
+              references: new FormArray([this.addSingleField('reference')]),
+              scenarios: new FormArray([this.addTribleFields('scenario', 'explanation', 'archetecture')]),
+              status: new FormControl(this.ksConstant.DEFAULT_STATUS)
+            })
+          })
+        })
+      })
     });
-  }
-
-  subTechs() {
-    return new FormGroup({
-      subTech: new FormControl('', Validators.required),
-      blog: new FormControl('', Validators.required),
-      definitions: new FormArray([this.addDoubleFields('definition', 'explanation')]),
-      examples: new FormArray([this.addTribleFields('example', 'program', 'explanation')]),
-      importances: new FormArray([this.addSingleField('importance')]),
-      inOutputs: new FormArray([this.addDoubleFields('in', 'out')]),
-      limitations: new FormArray([this.addSingleField('limitation')]),
-      archetectures: new FormArray([this.addTribleFields('archetecture', 'diagram', 'explanation')]),
-      needs: new FormArray([this.addSingleField('need')]),
-      references: new FormArray([this.addSingleField('reference')]),
-      scenarios: new FormArray([this.addTribleFields('scenario', 'explanation', 'archetecture')])
-    });
+    this.getTechnologies();
   }
 
   addSingleField(field): FormGroup {
@@ -111,7 +117,7 @@ export class AddBlogComponent implements OnInit {
   }
 
   addSingle(groupName, field) {
-    (<FormArray>(<FormArray>this.blogForm.controls['subTechs']).at(0).get(groupName)).push(this.addSingleField(field));
+    (<FormArray>(<FormGroup>(<FormGroup>(<FormGroup>this.blogForm.controls["subTechnologies"]).controls['defaultSubTechnologyName']).controls['blogs']).controls['defaultBlogName'].get(groupName)).push(this.addSingleField(field));
     this.toaster.info(field + " field added.");
   }
 
@@ -119,7 +125,7 @@ export class AddBlogComponent implements OnInit {
     if (groupName == 'inOutputs') {
       this.outputUrl[this.outputUrl.length] = this.ksConstant.formImageUrl;
     }
-    (<FormArray>(<FormArray>this.blogForm.controls["subTechs"]).at(0).get(groupName)).push(this.addDoubleFields(field1, field2));
+    (<FormArray>(<FormGroup>(<FormGroup>(<FormGroup>this.blogForm.controls["subTechnologies"]).controls['defaultSubTechnologyName']).controls['blogs']).controls['defaultBlogName'].get(groupName)).push(this.addDoubleFields(field1, field2));
     this.toaster.info(field1 + " and " + field2 + " fields added.");
   }
 
@@ -131,7 +137,7 @@ export class AddBlogComponent implements OnInit {
     } else if (groupName == 'examples') {
       this.programUrl[this.programUrl.length] = this.ksConstant.formImageUrl;
     }
-    (<FormArray>(<FormArray>this.blogForm.controls['subTechs']).at(0).get(groupName)).push(this.addTribleFields(field1, field2, field3));
+    (<FormArray>(<FormGroup>(<FormGroup>(<FormGroup>this.blogForm.controls["subTechnologies"]).controls['defaultSubTechnologyName']).controls['blogs']).controls['defaultBlogName'].get(groupName)).push(this.addTribleFields(field1, field2, field3));
     this.toaster.info(field1 + " , " + field2 + " and " + field3 + " fields added.");
   }
 
@@ -160,7 +166,7 @@ export class AddBlogComponent implements OnInit {
       default:
         this.errorMessage = '';
     }
-    (<FormArray>(<FormArray>this.blogForm.controls['subTechs']).at(0).get(groupName)).removeAt(index);
+    (<FormArray>(<FormGroup>(<FormGroup>(<FormGroup>this.blogForm.controls["subTechnologies"]).controls['defaultSubTechnologyName']).controls['blogs']).controls['defaultBlogName'].get(groupName)).removeAt(index);
     this.toaster.error(groupName + " removed.")
   }
 
@@ -168,28 +174,28 @@ export class AddBlogComponent implements OnInit {
     if (event.target.files && event.target.files[0]) {
       this.imageAsFile = <File>event.target.files[0];
       let reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
+
       switch (group) {
         case 'scenarios':
-          reader.onload = (event) => { this.scenarioUrl[index] = (<FileReader>event.target).result; };
+          reader.onload = (event) => { this.scenarioUrl[index] = <string>(<FileReader>event.target).result; };
           this.scenarioPreImageName = this.imageName;
           break;
         case 'archetectures':
-          reader.onload = (event) => { this.archetectureUrl[index] = (<FileReader>event.target).result; };
+          reader.onload = (event) => { this.archetectureUrl[index] = <string>(<FileReader>event.target).result; };
           this.archPreImageName = this.imageName;
           break;
         case 'examples':
-          reader.onload = (event) => { this.programUrl[index] = (<FileReader>event.target).result; };
+          reader.onload = (event) => { this.programUrl[index] = <string>(<FileReader>event.target).result; };
           this.programPreImageName = this.imageName;
           break;
         case 'inOutputs':
-          reader.onload = (event) => { this.outputUrl[index] = (<FileReader>event.target).result; };
+          reader.onload = (event) => { this.outputUrl[index] = <string>(<FileReader>event.target).result; };
           this.outputPreImageName = this.imageName;
           break;
         default:
           this.errorMessage = '';
       }
-
+      reader.readAsDataURL(event.target.files[0]);
       const file: FormData = new FormData();
       file.append("uploadImage", this.imageAsFile, this.imageAsFile.name);
       this.imageName = this.imageAsFile.name;
@@ -262,18 +268,43 @@ export class AddBlogComponent implements OnInit {
     }
   }
 
-  submitBlogForm(blogForm) {
-    console.log(blogForm);
-    let json = JSON.stringify(blogForm);
-    console.log("form "+json);
-    /* if (this.blogForm.get("technology").value != null && this.blogForm.get("technology").value != undefined && this.blogForm.get("technology").value != "") {
-      for (let tech of this.dropDownTechnology) {
-        if (tech.id === this.blogForm.get("technology").value) {
-          blogForm["technology"] = tech.technology;
-          break;
-        }
+  createcustomForm(customFrom: FormGroup, sequenceInc: SequenceInc) {
+    var parentSubTechsObj, childSubTechObj, parentBlogsObj, childBlogObj, subTechnologyId;
+
+    Object.keys(customFrom).map(parentSubTechKey => {
+      if (parentSubTechKey === this.ksConstant.SUBTECHNOLOGIES_KEY && customFrom[this.ksConstant.TECHNOLOGY_KEY] != undefined && customFrom[this.ksConstant.TECHNOLOGY_KEY].length > 0) {
+        parentSubTechsObj = customFrom[this.ksConstant.SUBTECHNOLOGIES_KEY];
+        Object.keys(parentSubTechsObj).map(childSubTechKey => {
+          if (childSubTechKey === this.ksConstant.DEFAULT_SUBTECH_NAME) {
+            childSubTechObj = parentSubTechsObj[childSubTechKey];
+            subTechnologyId = this.dropDwonObj.subTechs[childSubTechObj[this.ksConstant.SUBTECHNOLOGY_KEY]];
+            Object.keys(childSubTechObj).map(parentBlogsKey => {
+              if (parentBlogsKey === this.ksConstant.BLOGS_KEY) {
+                parentBlogsObj = childSubTechObj[parentBlogsKey];
+                Object.keys(parentBlogsObj).map(childBlogKey => {
+                  childBlogObj = parentBlogsObj[childBlogKey];
+                });
+                parentBlogsObj[sequenceInc.blogId] = childBlogObj;
+                delete parentBlogsObj[this.ksConstant.DEFAULT_BLOG_NAME];
+              }
+            });
+          }
+        });
+        parentSubTechsObj[subTechnologyId] = childSubTechObj;
+        delete parentSubTechsObj[this.ksConstant.DEFAULT_SUBTECH_NAME];
       }
-    }
+    });
+
+    customFrom[this.ksConstant.ID_KEY] = this.dropDwonObj.id;
+    const blogData = customFrom[this.ksConstant.SUBTECHNOLOGIES_KEY][subTechnologyId][this.ksConstant.BLOGS_KEY][sequenceInc.blogId];
+    this.utilService.convertMapToArray(blogData[this.ksConstant.NEEDS_KEY], this.ksConstant.NEED_KEY);
+    this.utilService.convertMapToArray(blogData[this.ksConstant.IMPORTANCES_KEY], this.ksConstant.IMPORTANCE_KEY);
+    this.utilService.convertMapToArray(blogData[this.ksConstant.LIMITATIONS_KEY], this.ksConstant.LIMITATION_KEY);
+    this.utilService.convertMapToArray(blogData[this.ksConstant.REFERENCES_KEY], this.ksConstant.REFERENCE_KEY);
+  }
+
+  submitBlogForm(blogForm) {
+
     if (this.archeUploadImagePaths != null && this.archeUploadImagePaths.length > 0) {
       blogForm["archeUploadImagePaths"] = this.archeUploadImagePaths;
       for (let index = 0; index < this.archeUploadImagePaths.length; index++) {
@@ -302,21 +333,25 @@ export class AddBlogComponent implements OnInit {
       }
       blogForm["outputDeleteImagePaths"] = this.outputDeleteImagePaths;
     }
-    console.log("adding blog to DB");
-    this.blogservice.saveBlogService(blogForm).subscribe(response => {
-      console.log("add blog component response :"+response);
+
+
+    this.blogservice.getSequenceIds().pipe(
+      mergeMap(sequenceInc => {
+        this.createcustomForm(blogForm, sequenceInc);
+        return this.blogservice.saveBlogService(blogForm);
+      })
+    ).subscribe(response => {
       this.successResponse = response;
     }, (error: Error) => {
-      console.log("add blog component error");
       this.errorMessage = error.errorMessage;
-      // this.toaster.error(error.errorMessage);
-    }); */
+      this.toaster.error(error.errorMessage);
+    });
+
   }
 
   getTechnologies() {
     if (this.dropDownTechnology == null || this.dropDownTechnology == undefined || this.dropDownTechnology.length == 0) {
       this.dropdownService.getTechnologiesService().subscribe(tech => {
-        console.log(tech);
         this.dropDownTechnology = tech;
       }, (error: Error) => {
         this.toaster.error(error.errorMessage);
@@ -325,15 +360,18 @@ export class AddBlogComponent implements OnInit {
   }
 
   getSubTechnologies(event) {
-    let id = event.target.value;
-    this.blogForm.controls['id'].setValue(id);
-    if (id == null || id == "") {
+    let technology = event.target.value;
+    this.blogForm.controls['id'].setValue(technology);
+    if (technology == null || technology == "") {
       this.dropDownsubTechnologies = null;
     }
-    if (id != null && id != undefined && id != '') {
-      this.dropdownService.getSubTechnologiesService(id).subscribe(subTech => {
-        this.dropDownsubTechnologies = subTech.subTechs;
-        console.log(this.dropDownsubTechnologies);
+    if (technology != null && technology != undefined && technology != '') {
+      this.dropdownService.getSubTechnologiesService(technology).subscribe(subTech => {
+        this.dropDownsubTechnologies = new Array<string>();
+        this.dropDwonObj = subTech;
+        Object.keys(subTech.subTechs).map(key => {
+          this.dropDownsubTechnologies.push(key);
+        });
       }, (error: Error) => {
         this.toaster.error(error.errorMessage);
       });

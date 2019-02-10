@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, NO_ERRORS_SCHEMA, ErrorHandler } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, APP_BASE_HREF } from '@angular/common';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './component/header/header.component';
@@ -42,7 +42,7 @@ import { HighlightModule } from 'ngx-highlightjs';
     MatIconModule,
     AngularWebStorageModule,
     ToastrModule.forRoot({
-      timeOut: 6000,
+      timeOut: 4000,
       positionClass: 'toast-top-right'
     })
   ],
@@ -51,6 +51,7 @@ import { HighlightModule } from 'ngx-highlightjs';
     Ksconstant,
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
     { provide: ErrorHandler, useClass: GlobalErrorHandlerService },
+    { provide: APP_BASE_HREF, useValue: '/'},
     ToastrService,
     ErrorMessageConstant
   ],

@@ -1,8 +1,8 @@
 export enum Url {
     ServerBaseUrl = "http://localhost:8081",
     AngularBaseUrl = "http://localhost:4200",
-    AssetsTechInfoPath = "/dist/technology/",
-    AssetsBlogPath = "/dist/blog/",
+    AssetsTechInfoPath = "/assets/technology/",
+    AssetsBlogPath = "/blog/",
     AddBlog = "/addBlog",
     AddTechnologyInfo = "/addTechInfo",
     BlogSave = "/blog/save",
@@ -14,6 +14,7 @@ export enum Url {
     AllTechInfo = "/blog/allTechInfo",
     GetImage = "/blog/getImage/",
     Technologies = "/dropDown/technologies",
-    SubTechnologies = "/dropDown/subTechnologies/"
-    
+    SubTechnologies = "/dropDown/subTechnologies/",
+    SequenceId = "/blog/sequenceId",
+    AllTechnologyWithSubTechs = "/blog/getTechAndSubTechs"
 }

@@ -14,8 +14,8 @@ export class DropDownService {
 
   constructor(private http: HttpClient) { }
 
-  getTechnologiesService(): Observable<Array<BlogDropDown>> {
-    return this.http.get<Array<BlogDropDown>>(Url.ServerBaseUrl.concat(Url.Technologies)).catch(this.handleException);
+  getTechnologiesService(): Observable<Array<string>> {
+    return this.http.get<Array<string>>(Url.ServerBaseUrl.concat(Url.Technologies)).catch(this.handleException);
   }
 
   getSubTechnologiesService(id: string): Observable<BlogDropDown> {

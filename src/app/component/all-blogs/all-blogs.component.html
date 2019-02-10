@@ -1,37 +1,35 @@
 <div class="container">
-  <div class="row">
+  <div class="row ">
     <div class="col-1"></div>
     <div class="col-9">
       <h2>All Blogs</h2>
-      <div class="card btn btn-outline-primary font-weight-bold" data-toggle="collapse" data-target="#demo">
-        <div class="card-body fontSize">Core Java</div>
-      </div>
+      <!-- If loop start -->
+      <div *ngFor="let technology of techInfo; let id = index;">
+        <div class="card btn btn-outline-primary font-weight-bold mb-2" data-toggle="collapse" [attr.data-target]="'#collapse-' + id" [attr.aria-expanded]="false" [attr.aria-controls] = "'collapse-' + id">
+          <div class="card-body fontSize">{{technology.technology}}</div>
+        </div>
 
-      <div id="demo" class="collapse">
-        <div class="row">
-          <div class="col-6">
-            <div class="card my-2 shadow">
-              <div class="card-body">
-                <div class="card-text d-inline">Abstraction</div>
-                <div class="float-right">
-                  <i data-toggle="tooltip" title="Edit Blog" class="btn btnfocus btn-outline-primary fa fa-pencil fa-md"></i>
-                  <i data-toggle="tooltip" title="Delete Blog" class="btn btnfocus btn-outline-danger fa fa-trash-o fa-md"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="card my-2 shadow">
-              <div class="card-body">
-                <h5 class="card-text">Encapsulation</h5>
-              </div>
-            </div>
-            <div class="card my-2 shadow">
+        <div [attr.id]="'collapse-' + id" class="container collapse">
+          <div class="row">
+            <div class="col-6" *ngFor="let subTech of technology.subTechs">
+              <div class="card btn btn-outline-secondary my-1 shadow-sm" >
                 <div class="card-body">
-                  <h5 class="card-text">Inheritance</h5>
+                  <div class="card-text d-inline" (click)="getBlogDetails(subTech)">{{subTech}}</div>
+                  <div class="float-right">
+                    <i data-toggle="tooltip" title="Edit Blog" (click)="editSubTechnology(subTech)" class="btn btnfocus btn-outline-primary fa fa-pencil fa-md"></i>
+                    <i data-toggle="tooltip" title="Delete Blog" (click)="deleteSubTechnology(subTech)" class="btn btnfocus btn-outline-danger fa fa-trash-o fa-md"></i>
+                  </div>
                 </div>
               </div>
+            </div>
           </div>
+        </div>
+        <!-- If loop end -->
+      </div>
+      <!-- Error message if no blogs available -->
+      <div *ngIf="!techInfo">
+        <div class="row h-100 justify-content-center align-items-center">
+          <strong class="text-dark bold">Currently no Blogs available</strong>
         </div>
       </div>
 

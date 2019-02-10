@@ -25,7 +25,7 @@ export class BlogListComponent implements OnInit {
     this.id = this.activeRoute.snapshot.paramMap.get("id");
     this.blogService.getSingleTechInfoService(this.id).subscribe(info => {
       this.techInfo = info;
-      this.techInfo.blogIconName = Url.AssetsTechInfoPath + this.techInfo.blogIconName;
+      this.techInfo.techIconName = Url.AssetsTechInfoPath + this.techInfo.techIconName;
     });
 
   }

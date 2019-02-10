@@ -1,8 +1,8 @@
 <div class="container">
   <div class="row">
-    <div *ngIf="techInfo" >
+    <div *ngIf="techInfo">
       <h1 class="font-weight-bold text-danger">
-        <img [src]="techInfo.blogIconName" class="mr-2" alt="Not found" > <u>{{techInfo.blog}}:</u>
+        <img [src]="techInfo.techIconName" class="mr-2" alt="Not found"> <u>{{techInfo.technology}}:</u>
       </h1>
       <p class="text-justify text-capitalize p-3 bg-light rounded">
         {{techInfo.shortNote}}
@@ -12,8 +12,26 @@
 
   <!-- Blog List -->
   <div class="row">
-    <div *ngFor="let subTech of techInfo.subTechs" class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 p-3 make-it-slow rounded" (click)="getBlogDetails(subTech.subTech)">
-      {{subTech.subTech}}
+    <div *ngFor="let subTech of techInfo.subTechs; let id = index" class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 rounded text-center"
+      (click)="getBlogDetails(subTech)">
+      <div class="card btn btn-outline-primary font-weight-bold mb-2" data-toggle="collapse" [attr.data-target]="'#collapse-' + id"
+        [attr.aria-expanded]="false" [attr.aria-controls]="'collapse-' + id">
+        <div class="card-body p-1 fontSize">{{subTech}}</div>
+      </div>
+
+      <!-- <div [attr.id]="'collapse-' + id" class="container collapse">
+        <div class="row">
+          <div class="col-6" *ngFor="let subTech of technology.subTechs">
+            <div class="card btn btn-outline-secondary my-1 shadow-sm">
+              <div class="card-body">
+                <div class="card-text d-inline" (click)="getBlogDetails(subTech)">{{subTech}} siva</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+
     </div>
   </div>
 

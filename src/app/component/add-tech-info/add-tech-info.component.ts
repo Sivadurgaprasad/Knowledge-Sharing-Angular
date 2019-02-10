@@ -7,6 +7,8 @@ import { Ksconstant } from '../../static/ksconstant';
 import { ToastrService } from 'ngx-toastr';
 import { TechInfo, BlogDropDown } from '../../interface/blog';
 import { DropDownService } from 'src/app/service/drop-down.service';
+import { UtilService } from 'src/app/service/util.service';
+import { mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'add-tech-info',
@@ -26,7 +28,7 @@ export class AddTechInfoComponent implements OnInit {
   public cardUrl: string;
   public imageName: string;
   public preImageName: string;
-  public allBlogs: Array<BlogDropDown>;
+  public allBlogs: Array<string>;
   public isTechExist: boolean = false;
   public hasError: boolean = false;
   public match: Array<string>;
@@ -34,7 +36,8 @@ export class AddTechInfoComponent implements OnInit {
   constructor(private uploadService: ImageUploadService,
     private blogService: BlogService, private dropdownService: DropDownService,
     private ksConstant: Ksconstant,
-    private toaster: ToastrService) {
+    private toaster: ToastrService,
+    private utilService: UtilService) {
     this.cardUrl = ksConstant.formImageUrl;
   }
 
@@ -43,7 +46,7 @@ export class AddTechInfoComponent implements OnInit {
       technology: new FormControl('', Validators.required),
       techIconName: new FormControl('', Validators.required),
       shortNote: new FormControl('', Validators.required),
-      subTechs: new FormArray([this.addSingleField('subTech')])
+      subTechnologies: new FormArray([this.addSingleField('subTechnology')])
     });
     this.getAllTechnologies();
   }
@@ -64,7 +67,7 @@ export class AddTechInfoComponent implements OnInit {
       this.selectedFile = <File>event.target.files[0];
       let reader = new FileReader();
       reader.onload = (event) => {
-        this.cardUrl = (<FileReader>event.target).result;
+        this.cardUrl = <string>(<FileReader>event.target).result;
       }
       reader.readAsDataURL(event.target.files[0]);
       const file: FormData = new FormData();
@@ -90,19 +93,36 @@ export class AddTechInfoComponent implements OnInit {
     }
   }
 
-  submitTechnologyForm(form) {
-    // for loop for converting Object form to normal strings
-    const subTechsList = this.techForm.get('subTechs') as FormArray;
-    for (let i = 0; i < subTechsList.length; i++) {
-      this.techForm.value.subTechs[i] = this.techForm.value.subTechs[i].subTech;
-    }
+  createCustomForm(group: FormGroup, subTechId: number): void {
+    var custForm = {};
+    group[this.ksConstant.TECHNOLOGY_KEY] = this.utilService.capitalizeFirst(group[this.ksConstant.TECHNOLOGY_KEY]);
+    Object.keys(group).map((key: string) => {
+      const abstControl = group[key];
+      if (key != undefined && key === this.ksConstant.SUBTECHNOLOGIES_KEY) {
+        abstControl.forEach((arr: string) => {
+          arr[this.ksConstant.SUBTECHNOLOGY_KEY] = this.utilService.capitalizeFirst(arr[this.ksConstant.SUBTECHNOLOGY_KEY]);
+          custForm[subTechId] = arr;
+          subTechId++;
+        });
+        group[this.ksConstant.SUBTECHNOLOGIES_KEY] = custForm;
+      }
+    });
+  }
 
-    if (this.uploadImagePath != null && this.uploadImagePath.length > 0) {
+  submitTechnologyForm(form) {
+
+    if (this.uploadImagePath != undefined && this.uploadImagePath != null && this.uploadImagePath.length > 0) {
       form["uploadImagePath"] = this.uploadImagePath;
       this.deleteImageUrlList.push(this.uploadImagePath);
       form["deleteImageUrlList"] = this.deleteImageUrlList;
-      this.blogService.saveTechInfoService(form).subscribe(resp => {
+      this.blogService.getSequenceIds().pipe(
+        mergeMap(sequenceInc => {
+          this.createCustomForm(form, parseInt(sequenceInc.subTechnologyId));
+          return this.blogService.saveTechInfoService(form);
+        })
+      ).subscribe(resp => {
         this.responseData = resp;
+        console.log(this.responseData);
       }, error => {
         this.errorMessage = "Technology submitting has some problem, Please try again after some time..."
       });
@@ -116,7 +136,7 @@ export class AddTechInfoComponent implements OnInit {
 
   getAllTechnologies() {
     this.dropdownService.getTechnologiesService().subscribe(result => {
-      this.allBlogs = new Array<BlogDropDown>();
+      this.allBlogs = new Array<string>();
       this.allBlogs = result;
     });
   }
@@ -125,8 +145,8 @@ export class AddTechInfoComponent implements OnInit {
     this.match = (this.allBlogs != null && this.allBlogs.length > 0) ? new Array<string>() : null;
     let isZeroSize: boolean = true;
     for (let blogs of this.allBlogs) {
-      if (tech.trim().length > 0 && blogs.technology != null && blogs.technology.toLowerCase().startsWith(tech.toLowerCase().trim())) {
-        if (tech.toLowerCase() === blogs.technology.toLowerCase() && tech.length == blogs.technology.length) {
+      if (tech.trim().length > 0 && blogs != null && blogs.toLowerCase().startsWith(tech.toLowerCase().trim())) {
+        if (tech.toLowerCase() === blogs.toLowerCase() && tech.length == blogs.length) {
           this.isTechExist = true;
           this.hasError = true;
           this.match = null;
@@ -134,7 +154,7 @@ export class AddTechInfoComponent implements OnInit {
         } else {
           if (this.match == null)
             this.match = new Array<string>();
-          this.match.push(blogs.technology);
+          this.match.push(blogs);
           isZeroSize = false;
           this.hasError = false;
           this.isTechExist = false;

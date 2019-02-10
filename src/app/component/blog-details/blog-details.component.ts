@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BlogService } from '../../service/blog.service';
-import { IBlog, ScriptStore } from '../../interface/blog';
+import { IBlog } from '../../interface/blog';
 import { ActivatedRoute } from '../../../../node_modules/@angular/router';
-import { ScriptLoaderService } from '../../service/script-loader.service';
 import { UtilService } from '../../service/util.service';
 
 @Component({

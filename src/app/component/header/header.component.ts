@@ -10,6 +10,7 @@ export class HeaderComponent implements OnInit {
 
   private addBlog: string = Url.AngularBaseUrl.concat(Url.AddBlog);
   private addTechInfo: string = Url.AngularBaseUrl.concat(Url.AddTechnologyInfo);
+  private home: string = Url.AngularBaseUrl;
   constructor() { }
 
   ngOnInit() {

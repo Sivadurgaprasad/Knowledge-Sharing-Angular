@@ -31,7 +31,7 @@ export class LoadingInterceptor implements HttpInterceptor {
               case 0:
                 this.toaster.error("Server not yet start please start server first", "", { positionClass: 'toast-top-right', timeOut: 10000, tapToDismiss: true });
                 break;
-              case 400:
+              case 401:
                 this.toaster.error("Input data not matching with requirement please check once again and try", "", { positionClass: 'toast-top-right', timeOut: 10000, tapToDismiss: true });
                 break;
               case 404:

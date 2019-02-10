@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Url } from '../static/url.enum';
-import { IBlog, TechInfo, TechInfoResponse } from '../interface/blog';
+import { IBlog, TechInfo, TechInfoResponse, SequenceInc } from '../interface/blog';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/operators';
@@ -22,51 +22,9 @@ export class BlogService {
 
   constructor(private http: HttpClient) { }
 
-  //   /**
-  //    * set service shared data
-  //    */
-  //   setSharedTechInfo(techInfo: TechInfo) {
-  //     this.sharedTechInfo.next(techInfo);
-  //   }
-
-  //   /**
-  //  * clear service shared data
-  //  */
-  //   clearSharedTechInfo() {
-  //     this.sharedTechInfo.next();
-  //   }
-
-  //   /**
-  //  * get service shared data
-  //  */
-  //   getSharedTechInfo(): Observable<TechInfo> {
-  //     return this.sharedTechInfo.asObservable();
-  //   }
-
-  //   /**
-  //   * set service shared data to Blog
-  //   */
-  //   setSharedBlog(blog: IBlog) {
-  //     this.sharedBlog.next(blog);
-  //   }
-
-  //   /**
-  //  * clear service shared data in blog
-  //  */
-  //   clearSharedBlog() {
-  //     this.sharedBlog.next();
-  //   }
-
-  //   /**
-  //  * get service shared data of blog
-  //  */
-  //   getSharedBlog(): Observable<IBlog> {
-  //     return this.sharedBlog.asObservable();
-  //   }
-
   /** K.S Blog saving service call  */
-  saveBlogService(blog:IBlog): Observable<string> {
-    return this.http.post(Url.ServerBaseUrl + Url.BlogSave, blog, {responseType: "text"}).catch(this.handleError);
+  saveBlogService(blog: IBlog): Observable<string> {
+    return this.http.post(Url.ServerBaseUrl + Url.BlogSave, blog, { responseType: "text" }).catch(this.handleError);
   }
 
   /** K.S Fetching all Blogs */
@@ -90,11 +48,16 @@ export class BlogService {
     return this.http.get<TechInfoResponse>(Url.ServerBaseUrl + Url.GetSingleTechInfo + id).catch(this.handleError);
   }
 
+  getSequenceIds(): Observable<SequenceInc> {
+    return this.http.get<SequenceInc>(Url.ServerBaseUrl.concat(Url.SequenceId)).catch(this.handleError);
+  }
+
+  getTechnologyWithSubTechs(): Observable<Array<TechInfoResponse>> {
+    return this.http.get<Array<TechInfoResponse>>(Url.ServerBaseUrl.concat(Url.AllTechnologyWithSubTechs)).catch(this.handleError);
+  }
 
   /** K.S Error handling for Blog */
   handleError(error: HttpErrorResponse) {
-    console.log("error occured in service");
-    console.log(error);
     this.exception = error.error;
     if (this.exception.errorCode != null || this.exception.errorCode != "" || this.exception.errorCode != undefined) {
       return throwError(this.exception.errorMessage);

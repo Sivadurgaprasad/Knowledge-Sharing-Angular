@@ -1,8 +1,8 @@
 export interface IBlog {
     id: string;
     technology: string;
-    subTechs: SubTech[];
-    
+    subTechnologies: Map<string, SubTechnology>;
+
 }
 
 export interface Archetecture {
@@ -45,13 +45,21 @@ export interface TechInfo {
 
 export interface TechInfoResponse {
     id: string;
-    blog: string;
-    blogIconName: string;
-    subTechs: Array<SubTech>;
+    technology: string;
+    techIconName: string;
+    subTechs: Array<string>;
+    shortNote: string;
 }
 
-export interface SubTech {
-    subTech: string;
+export interface SubTechnology {
+    subTechnology: string;
+    shortNote: string;
+    blogs: Map<string, BlogModel>;
+}
+
+export interface BlogModel {
+    blogId: string;
+    blog: string;
     definitions: Definition[];
     examples: Example[];
     importances: string[];
@@ -61,6 +69,7 @@ export interface SubTech {
     references: string[];
     scenarios: Scenario[];
     inOutputs: InOutput[];
+    status: string;
 }
 
 export interface ImageUrl {
@@ -70,15 +79,22 @@ export interface ImageUrl {
 export interface BlogDropDown {
     id: string;
     technology: string;
-    subTechs: Array<string>;
+    subTechnologies: Array<string>;
+    subTechs: Map<string, string>;
 }
 
 export interface Script {
-    name:string;
-    src:string;
-    loaded:boolean;
+    name: string;
+    src: string;
+    loaded: boolean;
 }
 
-export const ScriptStore:Script[] = [
-    {name: "Code Highlighter Script", src : "//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js", loaded: false}
+export interface SequenceInc {
+    id: string;
+    subTechnologyId: string;
+    blogId: string;
+}
+
+export const ScriptStore: Script[] = [
+    { name: "Code Highlighter Script", src: "//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js", loaded: false }
 ];

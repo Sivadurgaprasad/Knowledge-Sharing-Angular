@@ -1,3 +1,20 @@
 export class Ksconstant {
-    public formImageUrl = "../../../assets/images/add image.png";
+    public formImageUrl = "../../../assets/images/upload.png";
+    public DEFAULT_BLOG_NAME = "defaultBlogName";
+    public DEFAULT_SUBTECH_NAME = "defaultSubTechnologyName";
+    public ID_KEY = "id";
+    public TECHNOLOGY_KEY = "technology";
+    public SUBTECHNOLOGIES_KEY = "subTechnologies";
+    public SUBTECHNOLOGY_KEY = "subTechnology";
+    public BLOGS_KEY = "blogs";
+    public BLOG_KEY = "blog";
+    public DEFAULT_STATUS = "Pending";
+    public NEEDS_KEY = "needs";
+    public NEED_KEY = "need";
+    public REFERENCES_KEY = "references";
+    public REFERENCE_KEY = "reference";
+    public LIMITATIONS_KEY = "limitations";
+    public LIMITATION_KEY = "limitation";
+    public IMPORTANCES_KEY = "importances";
+    public IMPORTANCE_KEY = "importance";
 }

@@ -62,13 +62,13 @@
 
         <div class="form-group">
           <label for="subTech">Sub Technology </label>
-          <fieldset formArrayName="subTechs" class="form-group" *ngFor="let subTech of techForm.get('subTechs').controls; let id = index">
+          <fieldset formArrayName="subTechnologies" class="form-group" *ngFor="let subTech of techForm.get('subTechnologies').controls; let id = index">
             <div [formGroupName]="id">
               <div class="input-group">
-                <input type="text" class="form-control py-2 border-right-0 border" formControlName="subTech" placeholder="{{id+1}}) Sub Technology">
+                <input type="text" class="form-control py-2 border-right-0 border" formControlName="subTechnology" placeholder="{{id+1}}) Sub Technology">
                 <span class="input-group-append">
                   <div class=" border-left-0 border">
-                    <button class="btn btn-outline-danger btnfocus" type="button" (click)="removeField('subTechs', id)">
+                    <button class="btn btn-outline-danger btnfocus" type="button" (click)="removeField('subTechnologies', id)">
                       <i class="fa fa-window-close"></i>
                     </button>
                   </div>
@@ -76,7 +76,7 @@
               </div>
             </div>
           </fieldset>
-          <button type="button" class="btn btn-outline-info" (click)="addSingle('subTechs', 'subTech')">Sub Technology</button>
+          <button type="button" class="btn btn-outline-info" (click)="addSingle('subTechnologies', 'subTechnology')">Sub Technology</button>
         </div>
         <div>
           <button type="submit" [disabled]="!techForm.valid" data-toggle="modal" data-target="#result" class="btn btn-outline-info">submit</button>
@@ -104,7 +104,7 @@
                   <legend>Sub-Technologies</legend>
                 </li>
                 <ul>
-                  <li class="list-inline-item" *ngFor="let subTech of responseData.subTechs">{{subTech.subTech}}</li>
+                  <li class="list-inline-item" *ngFor="let subTech of responseData.subTechs">{{subTech}}</li>
                 </ul>
               </ul>
             </div>
